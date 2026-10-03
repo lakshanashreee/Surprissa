@@ -9,14 +9,14 @@ export const MiniGiftSandbox = () => {
   const [recipient, setRecipient] = useState('');
   const [occasion, setOccasion] = useState('Birthday');
   const [generatedCard, setGeneratedCard] = useState(null);
-  const { playPop, playSuccess, playSparkle } = useAudio();
+  const { playPop, playSuccess } = useAudio();
 
   const occasions = [
-    { name: 'Birthday', emoji: '🎂', phrase: 'is legally getting older today!' },
-    { name: 'Anniversary', emoji: '🥂', phrase: 'tolerated you for another whole year!' },
-    { name: 'Ask Them Out', emoji: '💌', phrase: 'deserves a date far better than a boring text message.' },
-    { name: 'Apology', emoji: '🕊️', phrase: 'deserves an official peace offering & boba.' },
-    { name: 'Best Friend', emoji: '👯‍♀️', phrase: 'is the official partner in crime.' }
+    { name: 'Birthday', phrase: 'is legally getting older today!' },
+    { name: 'Anniversary', phrase: 'tolerated you for another whole year!' },
+    { name: 'Ask Them Out', phrase: 'deserves a date far better than a boring text message.' },
+    { name: 'Apology', phrase: 'deserves an official peace offering & boba.' },
+    { name: 'Best Friend', phrase: 'is the official partner in crime.' }
   ];
 
   const handleGenerate = (e) => {
@@ -28,7 +28,6 @@ export const MiniGiftSandbox = () => {
     setGeneratedCard({
       name,
       occasion: selectedOccasion.name,
-      emoji: selectedOccasion.emoji,
       phrase: selectedOccasion.phrase
     });
 
@@ -118,7 +117,7 @@ export const MiniGiftSandbox = () => {
           >
             {occasions.map(o => (
               <option key={o.name} value={o.name}>
-                {o.emoji} {o.name}
+                {o.name}
               </option>
             ))}
           </select>
@@ -150,8 +149,8 @@ export const MiniGiftSandbox = () => {
               position: 'relative'
             }}
           >
-            <div style={{ fontSize: '2.5rem', marginBottom: '8px' }}>
-              {generatedCard.emoji}
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px' }}>
+              <Gift size={36} color="var(--color-burgundy-primary)" />
             </div>
             <h4 style={{
               fontFamily: 'var(--font-display)',

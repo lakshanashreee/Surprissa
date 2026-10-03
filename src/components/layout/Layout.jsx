@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
 import { AudioProvider } from '../ui/AudioEffects';
-import { CursorFollower } from '../ui/CursorFollower';
+import { CursorProvider } from '../ui/CursorFollower';
 import { EasterEggModal } from '../ui/EasterEggModal';
 
 export const Layout = ({ children }) => {
@@ -19,18 +19,16 @@ export const Layout = ({ children }) => {
 
   return (
     <AudioProvider>
-      <div style={{
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'relative',
-        backgroundColor: 'var(--color-burgundy-deepest)'
-      }}>
-        {/* Subtle Cursor Sparkle Effect */}
-        <CursorFollower />
-
-        {/* Global Navigation Bar */}
-        <Navbar onTriggerEasterEgg={triggerEasterEgg} />
+      <CursorProvider>
+        <div style={{
+          minHeight: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          position: 'relative',
+          backgroundColor: 'var(--color-burgundy-deepest)'
+        }}>
+          {/* Global Navigation Bar */}
+          <Navbar onTriggerEasterEgg={triggerEasterEgg} />
 
         {/* Main Content with Smooth Page Transitions */}
         <main style={{ flex: 1 }}>
@@ -57,6 +55,7 @@ export const Layout = ({ children }) => {
           message={easterEggMessage}
         />
       </div>
-    </AudioProvider>
-  );
+    </CursorProvider>
+  </AudioProvider>
+);
 };

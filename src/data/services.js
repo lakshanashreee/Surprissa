@@ -1,13 +1,13 @@
-// Centralized Services Data for Surprissa
+// Centralized Services Data for Surprissa (Emoji-Free SVG Ready)
 
 export const PERSONAL_SERVICES = [
   {
     id: "birthday",
     title: "Birthday Websites",
     tagline: "The birthday card that obliterates all other birthday cards.",
-    description: "Blowable digital candles, voice note archives, interactive photo timelines, and custom sound effects. Guaranteed to make them cry (in the good way).",
+    description: "Blowable digital candles, voice note archives, interactive photo timelines, and custom sound effects. Guaranteed to make them cry happy tears.",
     icon: "Gift",
-    badge: "Bestseller 🎉",
+    badge: "Bestseller",
     features: [
       "Custom blow-out interactive candles",
       "Memory photo timeline carousel",
@@ -23,7 +23,7 @@ export const PERSONAL_SERVICES = [
     tagline: "Celebrating the exact number of days you've tolerated each other.",
     description: "Digital love time capsules with relationship counters, milestone cards, 'how we met' interactive stories, and private romantic notes.",
     icon: "Heart",
-    badge: "Romantic 🥂",
+    badge: "Romantic",
     features: [
       "Live 'Days Together' counter",
       "Interactive milestone map/timeline",
@@ -39,7 +39,7 @@ export const PERSONAL_SERVICES = [
     tagline: "Because texting 'wanna go out sometime?' is criminally underwhelming.",
     description: "An un-rejectable date invite site with interactive restaurant options, playful runaway 'No' buttons, and a calendar invite when they say yes.",
     icon: "Sparkles",
-    badge: "High Chemistry 💌",
+    badge: "High Chemistry",
     features: [
       "Playful interactive RSVP",
       "Custom date activity picker",
@@ -55,7 +55,7 @@ export const PERSONAL_SERVICES = [
     tagline: "A digital precursor to the biggest 'Yes' of your life.",
     description: "Cinematic digital storytelling woven with interactive memories, custom audio scores, hidden countdowns, and location-triggered surprises.",
     icon: "Crown",
-    badge: "Grand Gesture 💍",
+    badge: "Grand Gesture",
     features: [
       "Cinematic scrolling layout",
       "Custom ambient background audio",
@@ -69,9 +69,9 @@ export const PERSONAL_SERVICES = [
     id: "apology",
     title: "Apology Websites",
     tagline: "Because 'I'm sorry' wasn't doing enough.",
-    description: "A funny, ultra-sincere peace offering. Features a forgiveness meter slider, virtual coffee/boba redemption coupon, and concrete promises.",
+    description: "A funny, ultra-sincere peace offering. Features a forgiveness meter slider, virtual coffee redemption coupon, and concrete promises.",
     icon: "Smile",
-    badge: "Peace Offering 🕊️",
+    badge: "Peace Offering",
     features: [
       "Forgiveness rating slider",
       "Virtual treat redemption coupon",
@@ -87,7 +87,7 @@ export const PERSONAL_SERVICES = [
     tagline: "Dedicated to the person who knows all your secrets.",
     description: "Unhinged inside joke soundboards, chaotic photo archives, nostalgia trivia, and a digital award for enduring your friendship.",
     icon: "Users",
-    badge: "Chaos Approved 👯‍♀️",
+    badge: "Chaos Approved",
     features: [
       "Inside-joke audio soundboard",
       "Locked ugly-photo gallery",
@@ -103,7 +103,7 @@ export const PERSONAL_SERVICES = [
     tagline: "Send them off with a digital standing ovation.",
     description: "Collaborative cheerboards where friends leave audio notes, polaroids, and wishes for their next big adventure.",
     icon: "GraduationCap",
-    badge: "Milestones 🎓",
+    badge: "Milestones",
     features: [
       "Multi-guest digital guestbook",
       "Audio/Video message clips",
@@ -118,7 +118,7 @@ export const PERSONAL_SERVICES = [
     tagline: "No occasion needed. Just unsolicited happiness.",
     description: "Digital scratch-cards, surprise bouquet deliveries, interactive smile generators, and random acts of internet kindness.",
     icon: "Zap",
-    badge: "Pure Joy 🌟",
+    badge: "Pure Joy",
     features: [
       "Scratch-off reveal card",
       "Virtual flower bouquet",
@@ -136,7 +136,7 @@ export const CREATIVE_WEB_SERVICES = [
     tagline: "Websites for humans who refuse to look generic.",
     description: "For creators, designers, writers, and artists who want a web presence that feels like entering an interactive gallery of their mind.",
     icon: "User",
-    badge: "Identity ✨",
+    badge: "Identity",
     features: [
       "Custom cursor & micro-animations",
       "Fluid responsive layout",
@@ -151,7 +151,7 @@ export const CREATIVE_WEB_SERVICES = [
     tagline: "Launch experiences that stop people from scrolling past.",
     description: "High-impact digital launches designed to evoke desire, build excitement, and create viral internet moments.",
     icon: "Rocket",
-    badge: "High Impact 🚀",
+    badge: "High Impact",
     features: [
       "Hero animation sequence",
       "Waitlist / Order form integration",
@@ -165,7 +165,7 @@ export const CREATIVE_WEB_SERVICES = [
     tagline: "For boutique brands, studios, and indie projects.",
     description: "Stand out from competitor templates. Clean, modern, memorable sites built with craft and soul.",
     icon: "Store",
-    badge: "Boutique 💎",
+    badge: "Boutique",
     features: [
       "Brand color token system",
       "Fast loading speed (60fps)",

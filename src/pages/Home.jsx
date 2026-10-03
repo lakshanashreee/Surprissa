@@ -1,27 +1,32 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Sparkles, Heart, Gift, Smile, Send, Flame, MessageCircle, Star, Zap } from 'lucide-react';
+import { ArrowRight, Sparkles, Heart, Gift, Smile, Send, Flame, MessageCircle, Star, Zap, Eye } from 'lucide-react';
 import { PRODUCT_DEMOS } from '../data/demos';
-import { TiltCard } from '../components/ui/TiltCard';
 import { Sticker } from '../components/ui/Sticker';
 import { MagneticButton } from '../components/ui/MagneticButton';
 import { LivePreviewModal } from '../components/interactive/LivePreviewModal';
 import { MiniGiftSandbox } from '../components/interactive/MiniGiftSandbox';
+import { DraggableCards } from '../components/interactive/DraggableCards';
+import { HoverFocusCards } from '../components/interactive/HoverFocusCards';
+import { TypewriterSubheading, EditorialMarquee } from '../components/interactive/TypewriterAndMarquee';
+import { RandomSurpriseWidget } from '../components/interactive/RandomSurpriseWidget';
 import { useAudio } from '../components/ui/AudioEffects';
+import { useCursor } from '../components/ui/CursorFollower';
 import confetti from 'canvas-confetti';
 
 export const Home = () => {
   const [selectedDemo, setSelectedDemo] = useState(null);
   const [envelopeOpened, setEnvelopeOpened] = useState(false);
-  const { playPop, playSuccess, playSparkle } = useAudio();
+  const { playPop, playSuccess } = useAudio();
+  const { setCursorText, clearCursorText } = useCursor();
 
   const handleOpenEnvelope = () => {
     playSuccess();
     setEnvelopeOpened(true);
     try {
       confetti({
-        particleCount: 100,
-        spread: 80,
+        particleCount: 110,
+        spread: 85,
         origin: { y: 0.5 },
         colors: ['#8D0B0B', '#FFD9C2', '#FFF1E8']
       });
@@ -38,47 +43,39 @@ export const Home = () => {
     <div style={{ color: 'var(--color-ivory)', overflow: 'hidden' }}>
       
       {/* ===================================================
-          1. HERO SECTION
+          1. HERO SECTION (Clean, Non-Overlapping Layout)
          =================================================== */}
       <section style={{
         position: 'relative',
-        minHeight: '90vh',
+        minHeight: '88vh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '80px 24px 60px',
+        padding: '70px 24px 50px',
         backgroundColor: 'var(--color-burgundy-deepest)',
         textAlign: 'center'
       }} className="bg-grain">
         
-        {/* Floating Decorative Elements / Glow */}
+        {/* Soft Radial Background Glow */}
         <div style={{
           position: 'absolute',
-          top: '20%',
+          top: '25%',
           left: '50%',
           transform: 'translateX(-50%)',
-          width: '600px',
-          height: '400px',
-          background: 'radial-gradient(circle, rgba(141, 11, 11, 0.45) 0%, rgba(255, 217, 194, 0.08) 50%, rgba(24, 2, 2, 0) 70%)',
+          width: '550px',
+          height: '350px',
+          background: 'radial-gradient(circle, rgba(141, 11, 11, 0.4) 0%, rgba(255, 217, 194, 0.06) 50%, rgba(24, 2, 2, 0) 70%)',
           pointerEvents: 'none',
-          filter: 'blur(50px)'
+          filter: 'blur(60px)'
         }} />
 
-        {/* Interactive Floating Stickers */}
-        <div style={{ position: 'absolute', top: '14%', left: '8%', display: 'none' }} className="hero-sticker-desktop">
-          <Sticker text="No boring texts allowed 🚫" icon={MessageCircle} rotation={-8} />
-        </div>
-        <div style={{ position: 'absolute', top: '22%', right: '9%', display: 'none' }} className="hero-sticker-desktop">
-          <Sticker text="Warning: May cause happy tears 🥹" icon={Heart} color="var(--color-peach-soft)" rotation={6} />
-        </div>
-
-        <div style={{ maxWidth: '960px', margin: '0 auto', position: 'relative', zIndex: 2 }}>
+        <div style={{ maxWidth: '920px', margin: '0 auto', position: 'relative', zIndex: 2 }}>
           
           {/* Tagline Badge */}
           <motion.div
-            initial={{ opacity: 0, y: -15 }}
+            initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.5 }}
             style={{ marginBottom: '24px' }}
           >
             <span style={{
@@ -91,78 +88,85 @@ export const Home = () => {
               border: '1px solid rgba(255, 217, 194, 0.25)',
               color: 'var(--color-peach-primary)',
               fontFamily: 'var(--font-display)',
-              fontSize: '0.9rem',
+              fontSize: '0.85rem',
               fontWeight: 700,
               letterSpacing: '0.06em',
-              textTransform: 'uppercase',
-              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)'
+              textTransform: 'uppercase'
             }}>
               <Sparkles size={16} /> Happiness Made Digital
             </span>
           </motion.div>
 
-          {/* Main Hero Statement */}
+          {/* Main Hero Heading (Refined, Readable Serif Typography) */}
           <motion.h1
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
             style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(2.5rem, 6vw, 4.8rem)',
-              fontWeight: 800,
-              lineHeight: 1.05,
+              fontFamily: 'var(--font-serif)',
+              fontSize: 'clamp(2.4rem, 5.5vw, 4.4rem)',
+              fontWeight: 700,
+              lineHeight: 1.15,
               color: 'var(--color-ivory)',
-              marginBottom: '24px',
-              letterSpacing: '-0.03em'
+              marginBottom: '20px',
+              letterSpacing: '-0.01em'
             }}
           >
-            Some feelings deserve{' '}
+            Some feelings deserve<br />
             <span style={{
               color: 'var(--color-peach-primary)',
-              position: 'relative',
-              display: 'inline-block'
+              fontStyle: 'italic'
             }}>
               more than a text.
-              <svg style={{ position: 'absolute', bottom: '-8px', left: 0, width: '100%', height: '12px' }} viewBox="0 0 100 20" preserveAspectRatio="none">
-                <path d="M0,15 Q50,0 100,15" stroke="var(--color-peach-primary)" strokeWidth="4" fill="none" />
-              </svg>
             </span>
           </motion.h1>
 
-          {/* Hero Subtitle */}
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
+          {/* Interactive Typewriter Subheading */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            style={{ marginBottom: '28px' }}
+          >
+            <TypewriterSubheading />
+          </motion.div>
+
+          {/* Clean Horizontal Sticker Shelf (No overlap with text!) */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
+            transition={{ duration: 0.6, delay: 0.25 }}
             style={{
-              fontFamily: 'var(--font-serif)',
-              fontSize: 'clamp(1.15rem, 2.5vw, 1.6rem)',
-              fontStyle: 'italic',
-              color: 'var(--color-peach-soft)',
-              maxWidth: '720px',
-              margin: '0 auto 36px',
-              lineHeight: 1.5
+              display: 'flex',
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              gap: '12px',
+              marginBottom: '36px'
             }}
           >
-            We create highly creative, personalized websites and digital experiences made for your favourite people and moments.
-          </motion.p>
+            <Sticker text="No boring texts allowed" icon={MessageCircle} rotation={-2} />
+            <Sticker text="Made for your favourite human" icon={Heart} color="var(--color-peach-soft)" rotation={3} />
+            <Sticker text="Warning: May cause happy tears" icon={Sparkles} color="var(--color-burgundy-primary)" textColor="var(--color-peach-primary)" rotation={-3} />
+          </motion.div>
 
-          {/* Hero Interactive Unwrapping Envelope */}
+          {/* Hero Interactive Unwrapping Box */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            style={{ marginBottom: '40px' }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            style={{ marginBottom: '36px' }}
           >
             {!envelopeOpened ? (
               <div
                 onClick={handleOpenEnvelope}
+                onMouseEnter={() => setCursorText('OPEN ME')}
+                onMouseLeave={clearCursorText}
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '12px',
                   padding: '16px 28px',
-                  borderRadius: '20px',
+                  borderRadius: 'var(--radius-pill)',
                   backgroundColor: 'var(--color-burgundy-dark)',
                   border: '2px dashed var(--color-peach-primary)',
                   color: 'var(--color-peach-primary)',
@@ -170,32 +174,33 @@ export const Home = () => {
                   boxShadow: 'var(--shadow-glow)',
                   fontFamily: 'var(--font-display)',
                   fontWeight: 700,
-                  fontSize: '1rem',
+                  fontSize: '0.95rem',
                   userSelect: 'none'
                 }}
               >
-                <Gift size={22} />
-                <span>Tap to unwrap a live preview gift 💌</span>
+                <Gift size={20} />
+                <span>Tap to unwrap a live preview gift</span>
               </div>
             ) : (
               <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
+                initial={{ scale: 0.85, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 style={{
                   display: 'inline-block',
-                  padding: '24px 32px',
+                  padding: '20px 32px',
                   borderRadius: '20px',
                   backgroundColor: 'var(--color-peach-soft)',
                   color: 'var(--color-burgundy-dark)',
                   border: '2px solid var(--color-burgundy-primary)',
-                  boxShadow: 'var(--shadow-lg)'
+                  boxShadow: 'var(--shadow-lg)',
+                  maxWidth: '600px'
                 }}
               >
-                <p style={{ fontFamily: 'var(--font-handwriting)', fontSize: '1.8rem', fontWeight: 700, marginBottom: '6px' }}>
-                  "WAIT... THIS IS A WEBSITE FOR A WEBSITE BUSINESS?? 😭"
+                <p style={{ fontFamily: 'var(--font-handwriting)', fontSize: '1.7rem', fontWeight: 700, marginBottom: '4px' }}>
+                  "WAIT... THIS IS A WEBSITE FOR A WEBSITE BUSINESS??"
                 </p>
-                <p style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>
-                  Yes! Surprissa turns your inside jokes, photos & memories into viral internet experiences.
+                <p style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)' }}>
+                  Yes! Surprissa turns your inside jokes, memories & milestones into custom digital experiences.
                 </p>
               </motion.div>
             )}
@@ -203,9 +208,9 @@ export const Home = () => {
 
           {/* Hero CTAs */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.4 }}
+            transition={{ duration: 0.6, delay: 0.35 }}
             style={{
               display: 'flex',
               flexWrap: 'wrap',
@@ -215,7 +220,7 @@ export const Home = () => {
             }}
           >
             <MagneticButton onClick={scrollToDemos} variant="primary" size="lg">
-              See what we make →
+              See the surprises →
             </MagneticButton>
 
             <MagneticButton to="/contact" variant="outline" size="lg">
@@ -223,21 +228,23 @@ export const Home = () => {
             </MagneticButton>
           </motion.div>
         </div>
+      </section>
 
-        <style>{`
-          @media (min-width: 992px) {
-            .hero-sticker-desktop { display: block !important; }
-          }
-        `}</style>
+      {/* Editorial Infinite Marquee */}
+      <EditorialMarquee />
+
+      {/* Draggable Cards Physics Sandbox */}
+      <section style={{ backgroundColor: 'var(--color-burgundy-dark)', padding: '20px 0' }}>
+        <DraggableCards />
       </section>
 
       {/* ===================================================
-          2. PRODUCT DEMOS SECTION ("Pick your kind of chaos")
+          2. PRODUCT DEMOS SECTION (Focus & Direction-Aware Cards)
          =================================================== */}
       <section
         id="demos-section"
         style={{
-          padding: '100px 24px',
+          padding: '90px 24px',
           backgroundColor: 'var(--color-burgundy-dark)',
           position: 'relative'
         }}
@@ -246,7 +253,7 @@ export const Home = () => {
         <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
           
           {/* Section Header */}
-          <div style={{ textAlign: 'center', maxWidth: '720px', margin: '0 auto 60px' }}>
+          <div style={{ textAlign: 'center', maxWidth: '720px', margin: '0 auto 56px' }}>
             <span style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -259,127 +266,29 @@ export const Home = () => {
               fontWeight: 700,
               textTransform: 'uppercase',
               letterSpacing: '0.06em',
-              marginBottom: '16px'
+              marginBottom: '14px'
             }}>
-              <Zap size={14} /> Interactive Catalog
+              <Zap size={14} /> Interactive Showcase
             </span>
             <h2 style={{
               fontFamily: 'var(--font-display)',
               fontSize: 'clamp(2rem, 4vw, 3.2rem)',
               color: 'var(--color-ivory)',
-              marginBottom: '16px'
+              marginBottom: '14px'
             }}>
               Pick your kind of chaos.
             </h2>
             <p style={{
               fontFamily: 'var(--font-serif)',
-              fontSize: '1.25rem',
+              fontSize: '1.2rem',
               color: 'var(--color-peach-soft)'
             }}>
-              Click <strong>"View demo"</strong> on any card to test a live working mini-experience.
+              Hover to reveal hidden secrets. Click any card to test a live working mini-experience.
             </p>
           </div>
 
-          {/* Demos Grid */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-            gap: '28px'
-          }}>
-            {PRODUCT_DEMOS.map((demo) => (
-              <TiltCard key={demo.id}>
-                <div style={{
-                  backgroundColor: 'var(--color-burgundy-primary)',
-                  border: '1.5px solid var(--color-border-light)',
-                  borderRadius: 'var(--radius-lg)',
-                  padding: '30px 26px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  height: '100%',
-                  boxShadow: 'var(--shadow-md)',
-                  position: 'relative',
-                  overflow: 'hidden'
-                }}>
-                  {/* Category Tag & Badge */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                    <span style={{
-                      fontSize: '0.8rem',
-                      fontWeight: 700,
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.06em',
-                      color: 'var(--color-peach-primary)',
-                      backgroundColor: 'rgba(255, 217, 194, 0.12)',
-                      padding: '4px 12px',
-                      borderRadius: 'var(--radius-pill)'
-                    }}>
-                      {demo.category}
-                    </span>
-                    <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--color-peach-soft)' }}>
-                      {demo.tag}
-                    </span>
-                  </div>
-
-                  {/* Card Content */}
-                  <div>
-                    <h3 style={{
-                      fontFamily: 'var(--font-display)',
-                      fontSize: '1.5rem',
-                      color: 'var(--color-ivory)',
-                      marginBottom: '6px'
-                    }}>
-                      {demo.title}
-                    </h3>
-                    <p style={{
-                      fontFamily: 'var(--font-serif)',
-                      fontSize: '1.05rem',
-                      fontStyle: 'italic',
-                      color: 'var(--color-peach-primary)',
-                      marginBottom: '14px'
-                    }}>
-                      "{demo.subtitle}"
-                    </p>
-                    <p style={{
-                      fontSize: '0.925rem',
-                      color: 'var(--color-peach-soft)',
-                      lineHeight: 1.6,
-                      marginBottom: '20px'
-                    }}>
-                      {demo.description}
-                    </p>
-
-                    {/* Highlights bullet tags */}
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '24px' }}>
-                      {demo.highlights.map((item, i) => (
-                        <span key={i} style={{
-                          fontSize: '0.78rem',
-                          backgroundColor: 'rgba(24, 2, 2, 0.4)',
-                          color: 'var(--color-ivory)',
-                          padding: '3px 10px',
-                          borderRadius: '6px',
-                          border: '1px solid rgba(255, 217, 194, 0.15)'
-                        }}>
-                          • {item}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Action Button */}
-                  <div style={{ marginTop: 'auto' }}>
-                    <MagneticButton
-                      onClick={() => { playPop(); setSelectedDemo(demo); }}
-                      variant="primary"
-                      size="sm"
-                      style={{ width: '100%' }}
-                    >
-                      View demo 👁️
-                    </MagneticButton>
-                  </div>
-                </div>
-              </TiltCard>
-            ))}
-          </div>
+          {/* HoverFocusCards Grid Component */}
+          <HoverFocusCards onSelectDemo={(demo) => setSelectedDemo(demo)} />
         </div>
       </section>
 
@@ -387,13 +296,13 @@ export const Home = () => {
           3. "HOW IT WORKS" SECTION (Visual 4-Step Flow)
          =================================================== */}
       <section style={{
-        padding: '100px 24px',
+        padding: '90px 24px',
         backgroundColor: 'var(--color-burgundy-deepest)',
         position: 'relative'
       }} className="bg-grain">
         <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
           
-          <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto 64px' }}>
+          <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto 56px' }}>
             <span style={{
               display: 'inline-block',
               padding: '4px 14px',
@@ -417,18 +326,16 @@ export const Home = () => {
             </h2>
           </div>
 
-          {/* 4 Steps Timeline Grid */}
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))',
-            gap: '24px',
-            position: 'relative'
+            gap: '24px'
           }}>
             {[
               {
                 num: '01',
                 title: 'Tell us about them',
-                desc: 'Fill out a quick 2-minute form about their quirks, inside jokes, photos, or favorite songs.',
+                desc: 'Fill out our quick 2-minute vibe form about their quirks, inside jokes, photos, or favorite songs.',
                 icon: MessageCircle
               },
               {
@@ -445,8 +352,8 @@ export const Home = () => {
               },
               {
                 num: '04',
-                title: 'Watch them lose their mind 😭',
-                desc: 'Send it via text/DM and wait for the frantic call, happy tears, or viral Instagram story.',
+                title: 'Watch them lose their mind',
+                desc: 'Send it via text/DM and wait for the frantic call, happy tears, or viral story reaction.',
                 icon: Heart
               }
             ].map((step, idx) => {
@@ -513,13 +420,14 @@ export const Home = () => {
         position: 'relative'
       }} className="bg-grain">
         <MiniGiftSandbox />
+        <RandomSurpriseWidget />
       </section>
 
       {/* ===================================================
-          5. EDITORIAL BRAND MANIFESTO BANNER
+          5. EDITORIAL MANIFESTO BANNER
          =================================================== */}
       <section style={{
-        padding: '90px 24px',
+        padding: '80px 24px',
         backgroundColor: 'var(--color-burgundy-deepest)',
         textAlign: 'center',
         borderTop: '1px solid rgba(255, 217, 194, 0.1)',
@@ -528,11 +436,11 @@ export const Home = () => {
         <div style={{ maxWidth: '840px', margin: '0 auto' }}>
           <p style={{
             fontFamily: 'var(--font-serif)',
-            fontSize: 'clamp(1.4rem, 3.2vw, 2.2rem)',
+            fontSize: 'clamp(1.4rem, 3vw, 2.1rem)',
             fontStyle: 'italic',
             color: 'var(--color-peach-primary)',
             lineHeight: 1.5,
-            marginBottom: '24px'
+            marginBottom: '20px'
           }}>
             "The internet is full of websites. Most of them are made to sell something. We wanted to make websites that make someone FEEL something."
           </p>
@@ -551,24 +459,23 @@ export const Home = () => {
           6. FINAL CTA BANNER
          =================================================== */}
       <section style={{
-        padding: '100px 24px',
+        padding: '90px 24px',
         backgroundColor: 'var(--color-burgundy-primary)',
-        textAlign: 'center',
-        position: 'relative'
+        textAlign: 'center'
       }}>
         <div style={{ maxWidth: '720px', margin: '0 auto' }}>
           <h2 style={{
             fontFamily: 'var(--font-display)',
-            fontSize: 'clamp(2.2rem, 4.5vw, 3.5rem)',
+            fontSize: 'clamp(2.2rem, 4.5vw, 3.4rem)',
             color: 'var(--color-ivory)',
-            marginBottom: '20px'
+            marginBottom: '18px'
           }}>
             Ready to make someone's whole week?
           </h2>
           <p style={{
-            fontSize: '1.15rem',
+            fontSize: '1.1rem',
             color: 'var(--color-peach-soft)',
-            marginBottom: '36px'
+            marginBottom: '32px'
           }}>
             Tell us who it's for and what you want to celebrate. We'll handle all the magic.
           </p>

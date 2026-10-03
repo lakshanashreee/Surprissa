@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Sparkles, Heart, Flame, Volume2, CheckCircle2, RotateCcw, Send, Calendar, Gift } from 'lucide-react';
+import { X, Sparkles, Heart, Flame, Volume2, CheckCircle2, RotateCcw, Send, Calendar, Gift, Smile, Coffee, Users, PartyPopper } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useAudio } from '../ui/AudioEffects';
 import { MagneticButton } from '../ui/MagneticButton';
@@ -168,8 +168,9 @@ export const LivePreviewModal = ({ demo, onClose }) => {
             {/* 1. BIRTHDAY DEMO */}
             {demo.demoType === 'birthday' && (
               <div style={{ textAlign: 'center', padding: '10px 0' }}>
-                <p style={{ color: 'var(--color-peach-soft)', fontSize: '0.95rem', marginBottom: '20px' }}>
-                  🎂 <strong>Tap/Click the candle flames to blow them out!</strong>
+                <p style={{ color: 'var(--color-peach-soft)', fontSize: '0.95rem', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                  <PartyPopper size={18} color="var(--color-peach-primary)" />
+                  <strong>Tap/Click the candle flames to blow them out!</strong>
                 </p>
 
                 {/* Interactive Cake */}
@@ -220,14 +221,14 @@ export const LivePreviewModal = ({ demo, onClose }) => {
                     fontFamily: 'var(--font-display)',
                     color: 'var(--color-peach-primary)'
                   }}>
-                    {candlesLit.some(c => c) ? "HAPPY BIRTHDAY BESTIE! 🎉" : "ALL CANDLES BLOWN! MAKE A WISH! ✨"}
+                    {candlesLit.some(c => c) ? "HAPPY BIRTHDAY BESTIE!" : "ALL CANDLES BLOWN! MAKE A WISH!"}
                   </div>
                 </div>
 
                 {!candlesLit.some(c => c) ? (
                   <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: '20px' }}>
                     <p style={{ fontFamily: 'var(--font-handwriting)', fontSize: '1.6rem', color: 'var(--color-peach-primary)' }}>
-                      "May your year be filled with zero bugs, endless coffee, and pure joy!" 💌
+                      "May your year be filled with zero bugs, endless coffee, and pure joy!"
                     </p>
                     <button onClick={resetCandles} style={{ background: 'none', border: '1px solid var(--color-peach-primary)', color: 'var(--color-peach-primary)', padding: '6px 16px', borderRadius: '20px', cursor: 'pointer', fontSize: '0.85rem', marginTop: '10px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                       <RotateCcw size={14} /> Relight Candles
@@ -241,7 +242,7 @@ export const LivePreviewModal = ({ demo, onClose }) => {
             {demo.demoType === 'askOut' && (
               <div style={{ textAlign: 'center', padding: '10px 0' }}>
                 <p style={{ color: 'var(--color-peach-soft)', fontSize: '0.95rem', marginBottom: '20px' }}>
-                  💌 <strong>Interactive Date Proposal Sandbox</strong>
+                  <strong>Interactive Date Proposal Sandbox</strong>
                 </p>
 
                 <div style={{
@@ -264,7 +265,7 @@ export const LivePreviewModal = ({ demo, onClose }) => {
 
                       <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '12px' }}>
                         <MagneticButton variant="primary" onClick={handleAskOutAccept}>
-                          YES! ABSOLUTELY 🍕
+                          YES! ABSOLUTELY
                         </MagneticButton>
 
                         <motion.button
@@ -283,7 +284,7 @@ export const LivePreviewModal = ({ demo, onClose }) => {
                             fontWeight: 600
                           }}
                         >
-                          No, I hate fun 😢
+                          No, I hate fun
                         </motion.button>
                       </div>
                     </>
@@ -291,10 +292,10 @@ export const LivePreviewModal = ({ demo, onClose }) => {
                     <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }}>
                       <CheckCircle2 size={48} color="var(--color-peach-primary)" style={{ margin: '0 auto 12px' }} />
                       <h4 style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', color: 'var(--color-peach-primary)' }}>
-                        IT'S A DATE! 🥂
+                        IT'S A DATE!
                       </h4>
                       <p style={{ color: 'var(--color-peach-soft)', marginTop: '8px' }}>
-                        Friday 7:00 PM • Coffee & Ramen • Added to Calendar ✨
+                        Friday 7:00 PM • Coffee & Ramen • Added to Calendar
                       </p>
                     </motion.div>
                   )}
@@ -333,7 +334,7 @@ export const LivePreviewModal = ({ demo, onClose }) => {
                     }}
                   >
                     <p style={{ fontFamily: 'var(--font-handwriting)', fontSize: '1.4rem', color: 'var(--color-peach-primary)' }}>
-                      {memoryFlipped ? "❤️ 'I still choose you every single day.'" : "Tap to flip private memory letter 💌"}
+                      {memoryFlipped ? "'I still choose you every single day.'" : "Tap to flip private memory letter"}
                     </p>
                   </div>
                 </div>
@@ -344,7 +345,7 @@ export const LivePreviewModal = ({ demo, onClose }) => {
             {demo.demoType === 'apology' && (
               <div style={{ textAlign: 'center', padding: '10px 0' }}>
                 <p style={{ color: 'var(--color-peach-soft)', fontSize: '0.95rem', marginBottom: '16px' }}>
-                  🕊️ <strong>Interactive Forgiveness Meter</strong>
+                  <strong>Interactive Forgiveness Meter</strong>
                 </p>
 
                 <div style={{
@@ -367,7 +368,7 @@ export const LivePreviewModal = ({ demo, onClose }) => {
                   />
 
                   <p style={{ marginTop: '16px', fontFamily: 'var(--font-handwriting)', fontSize: '1.4rem', color: 'var(--color-peach-soft)' }}>
-                    {forgiveScore < 30 ? "😡 'You better bring boba.'" : forgiveScore < 70 ? "😐 'Apology considered...'" : "🥰 'Forgiven! Boba delivered!'" }
+                    {forgiveScore < 30 ? "'You better bring boba.'" : forgiveScore < 70 ? "'Apology considered...'" : "'Forgiven! Boba delivered!'" }
                   </p>
                 </div>
               </div>
@@ -377,11 +378,11 @@ export const LivePreviewModal = ({ demo, onClose }) => {
             {demo.demoType === 'bestFriend' && (
               <div style={{ textAlign: 'center', padding: '10px 0' }}>
                 <p style={{ color: 'var(--color-peach-soft)', fontSize: '0.95rem', marginBottom: '16px' }}>
-                  👯‍♀️ <strong>Inside-Joke Audio Soundboard (Click to play)</strong>
+                  <strong>Inside-Joke Audio Soundboard (Click to play)</strong>
                 </p>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px' }}>
-                  {['"Bruh Moment 💀"', '"Remember That Time?"', '"Unhinged Energy"', '"Bestie For Life"'].map((sound, i) => (
+                  {['"Bruh Moment"', '"Remember That Time?"', '"Unhinged Energy"', '"Bestie For Life"'].map((sound, i) => (
                     <button
                       key={i}
                       onClick={() => playSoundbite(sound)}
@@ -428,13 +429,13 @@ export const LivePreviewModal = ({ demo, onClose }) => {
                         fontSize: '1.2rem'
                       }}
                     >
-                      ✨ CLICK TO SCRATCH OFF YOUR SURPRISE GIFT ✨
+                      CLICK TO SCRATCH OFF YOUR SURPRISE GIFT
                     </div>
                   ) : (
                     <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }}>
                       <Gift size={40} color="var(--color-peach-primary)" style={{ margin: '0 auto 8px' }} />
                       <h4 style={{ fontFamily: 'var(--font-display)', fontSize: '1.3rem', color: 'var(--color-peach-primary)' }}>
-                        You are officially awesome! 🌸
+                        You are officially awesome!
                       </h4>
                       <p style={{ color: 'var(--color-peach-soft)', marginTop: '6px', fontFamily: 'var(--font-handwriting)', fontSize: '1.4rem' }}>
                         "Sending virtual flowers & good energy your way."

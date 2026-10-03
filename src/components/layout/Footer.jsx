@@ -110,32 +110,50 @@ export const Footer = () => {
           }}>
             Connect
           </h4>
-          <a
-            href="https://instagram.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={playPop}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '8px 16px',
-              borderRadius: 'var(--radius-pill)',
-              backgroundColor: 'rgba(255, 217, 194, 0.1)',
-              color: 'var(--color-peach-primary)',
-              textDecoration: 'none',
-              fontWeight: 600,
-              fontSize: '0.9rem',
-              marginBottom: '16px'
-            }}
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-            </svg>
-            @surprissa
-          </a>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
+            <a
+              href="https://instagram.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={playPop}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '8px 16px',
+                borderRadius: 'var(--radius-pill)',
+                backgroundColor: 'rgba(255, 217, 194, 0.1)',
+                color: 'var(--color-peach-primary)',
+                textDecoration: 'none',
+                fontWeight: 600,
+                fontSize: '0.9rem',
+                width: 'fit-content'
+              }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+              </svg>
+              @surprissa
+            </a>
+
+            <a
+              href="mailto:surprissa.enquire@gmail.com"
+              onClick={playPop}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                color: 'var(--color-peach-soft)',
+                textDecoration: 'none',
+                fontSize: '0.85rem',
+                fontWeight: 600
+              }}
+            >
+              <Send size={14} color="var(--color-peach-primary)" /> surprissa.enquire@gmail.com
+            </a>
+          </div>
           <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
             Have a crazy creative idea? We love crazy creative ideas.
           </p>

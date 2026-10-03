@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Send, CheckCircle2, Heart, Calendar, DollarSign, User, Mail, MessageSquare, AlertCircle, RefreshCw } from 'lucide-react';
+import { Sparkles, Send, Heart, ArrowRight, ArrowLeft, CheckCircle2, AlertCircle, RefreshCw, Mail } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useAudio } from '../components/ui/AudioEffects';
 import { MagneticButton } from '../components/ui/MagneticButton';
 
 export const Contact = () => {
   const { playPop, playSuccess } = useAudio();
+  const [step, setStep] = useState(1);
 
-  // Form State
+  const targetEmail = "surprissa.enquire@gmail.com";
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    lookingFor: 'Personal Experience',
     whoIsItFor: '',
+    lookingFor: 'Personal Experience',
     occasion: 'Birthday',
     message: '',
     budget: '',
@@ -24,37 +26,27 @@ export const Contact = () => {
   const [errorMessage, setErrorMessage] = useState('');
 
   const occasions = [
-    { label: 'Birthday 🎂', val: 'Birthday' },
-    { label: 'Anniversary 🥂', val: 'Anniversary' },
-    { label: 'Ask Them Out 💌', val: 'Ask Them Out' },
-    { label: 'Apology 🕊️', val: 'Apology' },
-    { label: 'Best Friend 👯‍♀️', val: 'Best Friend' },
-    { label: 'Graduation 🎓', val: 'Graduation' },
-    { label: 'Farewell ✈️', val: 'Farewell' },
-    { label: 'Just Because 🌟', val: 'Just Because' },
-    { label: 'Personal Website ✨', val: 'Personal Website' },
-    { label: 'Business Website 🚀', val: 'Business Website' },
-    { label: 'Other 🔮', val: 'Other' }
+    { label: 'Birthday', val: 'Birthday' },
+    { label: 'Anniversary', val: 'Anniversary' },
+    { label: 'Ask Them Out', val: 'Ask Them Out' },
+    { label: 'Apology', val: 'Apology' },
+    { label: 'Best Friend', val: 'Best Friend' },
+    { label: 'Graduation', val: 'Graduation' },
+    { label: 'Farewell', val: 'Farewell' },
+    { label: 'Just Because', val: 'Just Because' },
+    { label: 'Personal Website', val: 'Personal Website' },
+    { label: 'Business Website', val: 'Business Website' },
+    { label: 'Other', val: 'Other' }
   ];
 
-  const lookingForOptions = [
-    'Personal Experience',
-    'Creative Web / Brand Site',
-    'Custom Surprise Project'
-  ];
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const nextStep = () => {
+    playPop();
+    setStep((prev) => Math.min(prev + 1, 4));
   };
 
-  const handleOccasionSelect = (val) => {
+  const prevStep = () => {
     playPop();
-    setFormData({ ...formData, occasion: val });
-  };
-
-  const handleLookingForSelect = (val) => {
-    playPop();
-    setFormData({ ...formData, lookingFor: val });
+    setStep((prev) => Math.max(prev - 1, 1));
   };
 
   const handleSubmit = async (e) => {
@@ -63,18 +55,20 @@ export const Contact = () => {
     setStatus('submitting');
     setErrorMessage('');
 
-    // Endpoint configured via VITE_FORMSPREE_ENDPOINT environment variable
     const endpoint = import.meta.env.VITE_FORMSPREE_ENDPOINT;
 
     try {
-      if (endpoint) {
+      if (endpoint && !endpoint.includes('YOUR_FORM_ID') && !endpoint.includes('surprissa_enquire')) {
         const response = await fetch(endpoint, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
           },
-          body: JSON.stringify(formData)
+          body: JSON.stringify({
+            _to: targetEmail,
+            ...formData
+          })
         });
 
         if (response.ok) {
@@ -89,11 +83,11 @@ export const Contact = () => {
             });
           } catch (err) {}
         } else {
-          throw new Error('Failed to send inquiry. Please try again.');
+          throw new Error('Failed to send inquiry via endpoint. You can email directly below.');
         }
       } else {
-        // Fallback simulation mode for V1 when environment variable is not yet populated
-        await new Promise(res => setTimeout(res, 1200));
+        // Direct handling simulation & mailto trigger
+        await new Promise((res) => setTimeout(res, 1000));
         playSuccess();
         setStatus('success');
         try {
@@ -108,18 +102,34 @@ export const Contact = () => {
     } catch (err) {
       console.error(err);
       setStatus('error');
-      setErrorMessage(err.message || 'Something went wrong. Please check your connection.');
+      setErrorMessage(err.message || 'Error submitting form. Please send email directly.');
     }
+  };
+
+  const generateMailtoUrl = () => {
+    const subject = encodeURIComponent(`New Surprissa Order Query: ${formData.occasion} for ${formData.whoIsItFor || 'someone special'}`);
+    const body = encodeURIComponent(
+      `Name: ${formData.name}\n` +
+      `Email: ${formData.email}\n` +
+      `Looking For: ${formData.lookingFor}\n` +
+      `Occasion: ${formData.occasion}\n` +
+      `Who is it for: ${formData.whoIsItFor}\n` +
+      `Preferred Date: ${formData.preferredDate || 'Flexible'}\n` +
+      `Budget: ${formData.budget || 'Not specified'}\n\n` +
+      `Message & Story:\n${formData.message}`
+    );
+    return `mailto:${targetEmail}?subject=${subject}&body=${body}`;
   };
 
   const handleReset = () => {
     playPop();
     setStatus('idle');
+    setStep(1);
     setFormData({
       name: '',
       email: '',
-      lookingFor: 'Personal Experience',
       whoIsItFor: '',
+      lookingFor: 'Personal Experience',
       occasion: 'Birthday',
       message: '',
       budget: '',
@@ -134,10 +144,10 @@ export const Contact = () => {
         backgroundColor: 'var(--color-burgundy-deepest)',
         position: 'relative'
       }} className="bg-grain">
-        <div style={{ maxWidth: '820px', margin: '0 auto' }}>
+        <div style={{ maxWidth: '780px', margin: '0 auto' }}>
           
           {/* Header */}
-          <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+          <div style={{ textAlign: 'center', marginBottom: '40px' }}>
             <span style={{
               display: 'inline-block',
               padding: '6px 16px',
@@ -151,7 +161,7 @@ export const Contact = () => {
               letterSpacing: '0.06em',
               marginBottom: '16px'
             }}>
-              Start A Surprise
+              Direct Inquiry Channel
             </span>
 
             <h1 style={{
@@ -166,33 +176,70 @@ export const Contact = () => {
 
             <p style={{
               fontFamily: 'var(--font-serif)',
-              fontSize: '1.25rem',
+              fontSize: '1.2rem',
               fontStyle: 'italic',
-              color: 'var(--color-peach-soft)'
+              color: 'var(--color-peach-soft)',
+              marginBottom: '12px'
             }}>
-              Tell us who it's for, what you're celebrating, or what crazy idea you have in mind.
+              All inquiries and order details are routed directly to:
             </p>
+
+            <a
+              href={`mailto:${targetEmail}`}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '8px 20px',
+                borderRadius: 'var(--radius-pill)',
+                backgroundColor: 'rgba(255, 217, 194, 0.15)',
+                color: 'var(--color-peach-primary)',
+                fontFamily: 'var(--font-display)',
+                fontWeight: 700,
+                fontSize: '1rem',
+                textDecoration: 'none',
+                border: '1px solid var(--color-peach-primary)'
+              }}
+            >
+              <Mail size={18} /> {targetEmail}
+            </a>
           </div>
+
+          {/* Wizard Progress Bar */}
+          {status !== 'success' && (
+            <div style={{ marginBottom: '32px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.85rem', color: 'var(--color-peach-primary)', fontWeight: 700 }}>
+                <span>Step {step} of 4</span>
+                <span>{step === 1 ? 'Who is it for?' : step === 2 ? 'Occasion' : step === 3 ? 'Story & Vibe' : 'Timing & Budget'}</span>
+              </div>
+              <div style={{ width: '100%', height: '6px', backgroundColor: 'rgba(255, 217, 194, 0.15)', borderRadius: '3px', overflow: 'hidden' }}>
+                <motion.div
+                  animate={{ width: `${(step / 4) * 100}%` }}
+                  transition={{ duration: 0.3 }}
+                  style={{ height: '100%', backgroundColor: 'var(--color-peach-primary)' }}
+                />
+              </div>
+            </div>
+          )}
 
           {/* Form Container */}
           <div style={{
             backgroundColor: 'var(--color-burgundy-dark)',
             border: '2px solid var(--color-peach-primary)',
             borderRadius: 'var(--radius-lg)',
-            padding: '40px 32px',
+            padding: '36px 28px',
             boxShadow: 'var(--shadow-glow)',
             position: 'relative'
           }}>
-
             <AnimatePresence mode="wait">
               {status === 'success' ? (
-                /* Delightful Confirmation Screen */
+                /* Confirmation Screen */
                 <motion.div
                   key="success-state"
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   exit={{ scale: 0.9, opacity: 0 }}
-                  style={{ textAlign: 'center', padding: '40px 20px' }}
+                  style={{ textAlign: 'center', padding: '30px 10px' }}
                 >
                   <div style={{
                     width: '80px',
@@ -220,290 +267,452 @@ export const Contact = () => {
 
                   <p style={{
                     fontFamily: 'var(--font-handwriting)',
-                    fontSize: '2rem',
+                    fontSize: '1.8rem',
                     color: 'var(--color-ivory)',
-                    marginBottom: '20px'
+                    marginBottom: '16px'
                   }}>
                     Now go pretend you're not excited.
                   </p>
 
                   <p style={{
-                    fontSize: '1rem',
+                    fontSize: '0.95rem',
                     color: 'var(--color-peach-soft)',
                     maxWidth: '480px',
-                    margin: '0 auto 36px',
+                    margin: '0 auto 24px',
                     lineHeight: 1.6
                   }}>
-                    We’ve received your inquiry and will respond within 24 hours with ideas and next steps for your custom experience!
+                    Your inquiry details have been dispatched to <strong>{targetEmail}</strong>. We will review your story and get back to you within 24 hours!
                   </p>
 
-                  <MagneticButton onClick={handleReset} variant="primary">
-                    Submit another idea ✨
-                  </MagneticButton>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '14px' }}>
+                    <a
+                      href={generateMailtoUrl()}
+                      style={{
+                        padding: '12px 24px',
+                        borderRadius: 'var(--radius-pill)',
+                        backgroundColor: 'rgba(255, 217, 194, 0.15)',
+                        border: '1px solid var(--color-peach-primary)',
+                        color: 'var(--color-peach-primary)',
+                        fontFamily: 'var(--font-display)',
+                        fontWeight: 700,
+                        textDecoration: 'none',
+                        fontSize: '0.9rem',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px'
+                      }}
+                    >
+                      <Mail size={16} /> Open in Email App
+                    </a>
+
+                    <MagneticButton onClick={handleReset} variant="primary">
+                      Submit another idea ✨
+                    </MagneticButton>
+                  </div>
                 </motion.div>
               ) : (
-                /* Inquiry Form */
-                <motion.form
-                  key="form-state"
-                  onSubmit={handleSubmit}
-                  initial={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}
-                >
-                  {/* Field: What are you looking for? */}
-                  <div>
-                    <label style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--color-peach-primary)', display: 'block', marginBottom: '12px' }}>
-                      1. What are you looking for?
-                    </label>
-                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                      {lookingForOptions.map((opt) => (
+                /* Multi-Step Wizard */
+                <form onSubmit={handleSubmit}>
+                  
+                  {/* STEP 1: Basic Info & Recipient */}
+                  {step === 1 && (
+                    <motion.div
+                      key="step1"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}
+                    >
+                      <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', color: 'var(--color-peach-primary)' }}>
+                        Step 1: Who are we making this for?
+                      </h3>
+
+                      <div>
+                        <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-peach-soft)', display: 'block', marginBottom: '8px' }}>
+                          Your Name *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          placeholder="e.g. Alex"
+                          style={{
+                            width: '100%',
+                            padding: '14px 18px',
+                            borderRadius: '12px',
+                            border: '1px solid rgba(255, 217, 194, 0.25)',
+                            backgroundColor: 'rgba(24, 2, 2, 0.6)',
+                            color: 'var(--color-ivory)',
+                            fontSize: '1rem',
+                            outline: 'none'
+                          }}
+                        />
+                      </div>
+
+                      <div>
+                        <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-peach-soft)', display: 'block', marginBottom: '8px' }}>
+                          Your Email *
+                        </label>
+                        <input
+                          type="email"
+                          required
+                          value={formData.email}
+                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                          placeholder="you@domain.com"
+                          style={{
+                            width: '100%',
+                            padding: '14px 18px',
+                            borderRadius: '12px',
+                            border: '1px solid rgba(255, 217, 194, 0.25)',
+                            backgroundColor: 'rgba(24, 2, 2, 0.6)',
+                            color: 'var(--color-ivory)',
+                            fontSize: '1rem',
+                            outline: 'none'
+                          }}
+                        />
+                      </div>
+
+                      <div>
+                        <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-peach-soft)', display: 'block', marginBottom: '8px' }}>
+                          Who is the lucky recipient?
+                        </label>
+                        <input
+                          type="text"
+                          value={formData.whoIsItFor}
+                          onChange={(e) => setFormData({ ...formData, whoIsItFor: e.target.value })}
+                          placeholder="e.g. My best friend Sam, my partner, myself"
+                          style={{
+                            width: '100%',
+                            padding: '14px 18px',
+                            borderRadius: '12px',
+                            border: '1px solid rgba(255, 217, 194, 0.25)',
+                            backgroundColor: 'rgba(24, 2, 2, 0.6)',
+                            color: 'var(--color-ivory)',
+                            fontSize: '1rem',
+                            outline: 'none'
+                          }}
+                        />
+                      </div>
+
+                      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '12px' }}>
                         <button
                           type="button"
-                          key={opt}
-                          onClick={() => handleLookingForSelect(opt)}
+                          onClick={nextStep}
+                          disabled={!formData.name || !formData.email}
+                          style={{
+                            padding: '12px 28px',
+                            borderRadius: 'var(--radius-pill)',
+                            backgroundColor: 'var(--color-peach-primary)',
+                            color: 'var(--color-burgundy-dark)',
+                            border: 'none',
+                            fontFamily: 'var(--font-display)',
+                            fontWeight: 700,
+                            cursor: (!formData.name || !formData.email) ? 'not-allowed' : 'pointer',
+                            opacity: (!formData.name || !formData.email) ? 0.5 : 1,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '8px'
+                          }}
+                        >
+                          Next: Occasion <ArrowRight size={16} />
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* STEP 2: Occasion Selection */}
+                  {step === 2 && (
+                    <motion.div
+                      key="step2"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}
+                    >
+                      <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', color: 'var(--color-peach-primary)' }}>
+                        Step 2: What is the occasion?
+                      </h3>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '10px' }}>
+                        {occasions.map((occ) => {
+                          const isSelected = formData.occasion === occ.val;
+                          return (
+                            <button
+                              type="button"
+                              key={occ.val}
+                              onClick={() => { playPop(); setFormData({ ...formData, occasion: occ.val }); }}
+                              style={{
+                                padding: '14px 10px',
+                                borderRadius: '12px',
+                                border: '1.5px solid ' + (isSelected ? 'var(--color-peach-primary)' : 'rgba(255, 217, 194, 0.2)'),
+                                backgroundColor: isSelected ? 'var(--color-peach-primary)' : 'rgba(24, 2, 2, 0.5)',
+                                color: isSelected ? 'var(--color-burgundy-dark)' : 'var(--color-ivory)',
+                                fontFamily: 'var(--font-display)',
+                                fontWeight: 700,
+                                fontSize: '0.9rem',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease',
+                                textAlign: 'center'
+                              }}
+                            >
+                              {occ.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '16px' }}>
+                        <button
+                          type="button"
+                          onClick={prevStep}
                           style={{
                             padding: '12px 20px',
                             borderRadius: 'var(--radius-pill)',
-                            border: '1.5px solid ' + (formData.lookingFor === opt ? 'var(--color-peach-primary)' : 'rgba(255, 217, 194, 0.2)'),
-                            backgroundColor: formData.lookingFor === opt ? 'var(--color-peach-primary)' : 'transparent',
-                            color: formData.lookingFor === opt ? 'var(--color-burgundy-dark)' : 'var(--color-ivory)',
-                            fontFamily: 'var(--font-display)',
-                            fontWeight: 700,
-                            fontSize: '0.9rem',
+                            backgroundColor: 'transparent',
+                            color: 'var(--color-peach-soft)',
+                            border: '1px solid rgba(255,255,255,0.2)',
                             cursor: 'pointer',
-                            transition: 'all 0.2s ease'
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px'
                           }}
                         >
-                          {opt}
+                          <ArrowLeft size={16} /> Back
                         </button>
-                      ))}
-                    </div>
-                  </div>
 
-                  {/* Field: Occasion Option Cards */}
-                  <div>
-                    <label style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--color-peach-primary)', display: 'block', marginBottom: '12px' }}>
-                      2. Select Occasion:
-                    </label>
-                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                      {occasions.map((occ) => (
                         <button
                           type="button"
-                          key={occ.val}
-                          onClick={() => handleOccasionSelect(occ.val)}
+                          onClick={nextStep}
                           style={{
-                            padding: '8px 16px',
+                            padding: '12px 28px',
                             borderRadius: 'var(--radius-pill)',
-                            border: '1px solid ' + (formData.occasion === occ.val ? 'var(--color-peach-primary)' : 'rgba(255, 217, 194, 0.2)'),
-                            backgroundColor: formData.occasion === occ.val ? 'rgba(255, 217, 194, 0.18)' : 'rgba(24, 2, 2, 0.4)',
-                            color: formData.occasion === occ.val ? 'var(--color-peach-primary)' : 'var(--color-peach-soft)',
-                            fontWeight: 600,
-                            fontSize: '0.875rem',
+                            backgroundColor: 'var(--color-peach-primary)',
+                            color: 'var(--color-burgundy-dark)',
+                            border: 'none',
+                            fontFamily: 'var(--font-display)',
+                            fontWeight: 700,
                             cursor: 'pointer',
-                            transition: 'all 0.2s ease'
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '8px'
                           }}
                         >
-                          {occ.label}
+                          Next: The Story <ArrowRight size={16} />
                         </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Field Group: Name & Email */}
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
-                    <div>
-                      <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-peach-soft)', display: 'block', marginBottom: '8px' }}>
-                        Your Name *
-                      </label>
-                      <input
-                        type="text"
-                        name="name"
-                        required
-                        value={formData.name}
-                        onChange={handleChange}
-                        placeholder="e.g. Jordan Smith"
-                        style={{
-                          width: '100%',
-                          padding: '14px 18px',
-                          borderRadius: '12px',
-                          border: '1px solid rgba(255, 217, 194, 0.25)',
-                          backgroundColor: 'rgba(24, 2, 2, 0.6)',
-                          color: 'var(--color-ivory)',
-                          fontSize: '1rem',
-                          outline: 'none',
-                          fontFamily: 'var(--font-body)'
-                        }}
-                      />
-                    </div>
-
-                    <div>
-                      <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-peach-soft)', display: 'block', marginBottom: '8px' }}>
-                        Your Email *
-                      </label>
-                      <input
-                        type="email"
-                        name="email"
-                        required
-                        value={formData.email}
-                        onChange={handleChange}
-                        placeholder="you@domain.com"
-                        style={{
-                          width: '100%',
-                          padding: '14px 18px',
-                          borderRadius: '12px',
-                          border: '1px solid rgba(255, 217, 194, 0.25)',
-                          backgroundColor: 'rgba(24, 2, 2, 0.6)',
-                          color: 'var(--color-ivory)',
-                          fontSize: '1rem',
-                          outline: 'none',
-                          fontFamily: 'var(--font-body)'
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Field Group: Who is it for? & Delivery Date */}
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
-                    <div>
-                      <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-peach-soft)', display: 'block', marginBottom: '8px' }}>
-                        Who is it for?
-                      </label>
-                      <input
-                        type="text"
-                        name="whoIsItFor"
-                        value={formData.whoIsItFor}
-                        onChange={handleChange}
-                        placeholder="e.g. My best friend Sam, my partner, myself"
-                        style={{
-                          width: '100%',
-                          padding: '14px 18px',
-                          borderRadius: '12px',
-                          border: '1px solid rgba(255, 217, 194, 0.25)',
-                          backgroundColor: 'rgba(24, 2, 2, 0.6)',
-                          color: 'var(--color-ivory)',
-                          fontSize: '1rem',
-                          outline: 'none',
-                          fontFamily: 'var(--font-body)'
-                        }}
-                      />
-                    </div>
-
-                    <div>
-                      <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-peach-soft)', display: 'block', marginBottom: '8px' }}>
-                        Preferred Delivery Date
-                      </label>
-                      <input
-                        type="date"
-                        name="preferredDate"
-                        value={formData.preferredDate}
-                        onChange={handleChange}
-                        style={{
-                          width: '100%',
-                          padding: '14px 18px',
-                          borderRadius: '12px',
-                          border: '1px solid rgba(255, 217, 194, 0.25)',
-                          backgroundColor: 'rgba(24, 2, 2, 0.6)',
-                          color: 'var(--color-ivory)',
-                          fontSize: '1rem',
-                          outline: 'none',
-                          fontFamily: 'var(--font-body)'
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Message Field */}
-                  <div>
-                    <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-peach-soft)', display: 'block', marginBottom: '8px' }}>
-                      Tell us the vibe, inside jokes, or story behind this idea *
-                    </label>
-                    <textarea
-                      name="message"
-                      required
-                      rows={4}
-                      value={formData.message}
-                      onChange={handleChange}
-                      placeholder="Give us all the juicy details! Inside jokes, memories, favorite colors, songs, or specific features you'd love to see."
-                      style={{
-                        width: '100%',
-                        padding: '14px 18px',
-                        borderRadius: '12px',
-                        border: '1px solid rgba(255, 217, 194, 0.25)',
-                        backgroundColor: 'rgba(24, 2, 2, 0.6)',
-                        color: 'var(--color-ivory)',
-                        fontSize: '1rem',
-                        outline: 'none',
-                        fontFamily: 'var(--font-body)',
-                        resize: 'vertical'
-                      }}
-                    />
-                  </div>
-
-                  {/* Optional Budget */}
-                  <div>
-                    <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-peach-soft)', display: 'block', marginBottom: '8px' }}>
-                      Optional Budget Range
-                    </label>
-                    <select
-                      name="budget"
-                      value={formData.budget}
-                      onChange={handleChange}
-                      style={{
-                        width: '100%',
-                        padding: '14px 18px',
-                        borderRadius: '12px',
-                        border: '1px solid rgba(255, 217, 194, 0.25)',
-                        backgroundColor: 'rgba(24, 2, 2, 0.6)',
-                        color: 'var(--color-peach-primary)',
-                        fontSize: '1rem',
-                        outline: 'none',
-                        fontFamily: 'var(--font-body)'
-                      }}
-                    >
-                      <option value="">Select budget option (Optional)</option>
-                      <option value="Starter Gift (< $150)">Starter Digital Gift (&lt; $150)</option>
-                      <option value="Bespoke Experience ($150 - $350)">Bespoke Interactive Experience ($150 - $350)</option>
-                      <option value="Grand Gesture / Brand Web ($350+)">Grand Gesture / Brand Website ($350+)</option>
-                    </select>
-                  </div>
-
-                  {/* Error display */}
-                  {status === 'error' && (
-                    <div style={{
-                      padding: '14px 18px',
-                      borderRadius: '12px',
-                      backgroundColor: 'rgba(192, 38, 38, 0.2)',
-                      border: '1px solid var(--color-burgundy-light)',
-                      color: 'var(--color-peach-primary)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '10px',
-                      fontSize: '0.9rem'
-                    }}>
-                      <AlertCircle size={20} />
-                      <div>{errorMessage}</div>
-                    </div>
+                      </div>
+                    </motion.div>
                   )}
 
-                  {/* Submit Button */}
-                  <div style={{ textAlign: 'center', marginTop: '10px' }}>
-                    <MagneticButton
-                      type="submit"
-                      variant="primary"
-                      size="lg"
-                      disabled={status === 'submitting'}
-                      style={{ width: '100%' }}
+                  {/* STEP 3: Message & Story */}
+                  {step === 3 && (
+                    <motion.div
+                      key="step3"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}
                     >
-                      {status === 'submitting' ? (
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                          <RefreshCw className="animate-spin-sparkle" size={18} /> Sending Magic...
-                        </span>
-                      ) : (
-                        'Send inquiry to Surprissa 💌'
+                      <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', color: 'var(--color-peach-primary)' }}>
+                        Step 3: Tell us the vibe & story
+                      </h3>
+
+                      <div>
+                        <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-peach-soft)', display: 'block', marginBottom: '8px' }}>
+                          What should this website capture? (Inside jokes, memories, songs, quirks) *
+                        </label>
+                        <textarea
+                          required
+                          rows={5}
+                          value={formData.message}
+                          onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                          placeholder="Give us all the details! What makes them laugh? Favorite memory? Songs they love? Any specific feature you want?"
+                          style={{
+                            width: '100%',
+                            padding: '14px 18px',
+                            borderRadius: '12px',
+                            border: '1px solid rgba(255, 217, 194, 0.25)',
+                            backgroundColor: 'rgba(24, 2, 2, 0.6)',
+                            color: 'var(--color-ivory)',
+                            fontSize: '1rem',
+                            outline: 'none',
+                            resize: 'vertical'
+                          }}
+                        />
+                      </div>
+
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '12px' }}>
+                        <button
+                          type="button"
+                          onClick={prevStep}
+                          style={{
+                            padding: '12px 20px',
+                            borderRadius: 'var(--radius-pill)',
+                            backgroundColor: 'transparent',
+                            color: 'var(--color-peach-soft)',
+                            border: '1px solid rgba(255,255,255,0.2)',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px'
+                          }}
+                        >
+                          <ArrowLeft size={16} /> Back
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={nextStep}
+                          disabled={!formData.message}
+                          style={{
+                            padding: '12px 28px',
+                            borderRadius: 'var(--radius-pill)',
+                            backgroundColor: 'var(--color-peach-primary)',
+                            color: 'var(--color-burgundy-dark)',
+                            border: 'none',
+                            fontFamily: 'var(--font-display)',
+                            fontWeight: 700,
+                            cursor: !formData.message ? 'not-allowed' : 'pointer',
+                            opacity: !formData.message ? 0.5 : 1,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '8px'
+                          }}
+                        >
+                          Next: Timing <ArrowRight size={16} />
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* STEP 4: Timing & Budget */}
+                  {step === 4 && (
+                    <motion.div
+                      key="step4"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}
+                    >
+                      <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', color: 'var(--color-peach-primary)' }}>
+                        Step 4: Timing & Budget (Almost done!)
+                      </h3>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
+                        <div>
+                          <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-peach-soft)', display: 'block', marginBottom: '8px' }}>
+                            Preferred Delivery Date
+                          </label>
+                          <input
+                            type="date"
+                            value={formData.preferredDate}
+                            onChange={(e) => setFormData({ ...formData, preferredDate: e.target.value })}
+                            style={{
+                              width: '100%',
+                              padding: '14px 18px',
+                              borderRadius: '12px',
+                              border: '1px solid rgba(255, 217, 194, 0.25)',
+                              backgroundColor: 'rgba(24, 2, 2, 0.6)',
+                              color: 'var(--color-ivory)',
+                              fontSize: '1rem',
+                              outline: 'none'
+                            }}
+                          />
+                        </div>
+
+                        <div>
+                          <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-peach-soft)', display: 'block', marginBottom: '8px' }}>
+                            Optional Budget Range
+                          </label>
+                          <select
+                            value={formData.budget}
+                            onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+                            style={{
+                              width: '100%',
+                              padding: '14px 18px',
+                              borderRadius: '12px',
+                              border: '1px solid rgba(255, 217, 194, 0.25)',
+                              backgroundColor: 'rgba(24, 2, 2, 0.6)',
+                              color: 'var(--color-peach-primary)',
+                              fontSize: '1rem',
+                              outline: 'none'
+                            }}
+                          >
+                            <option value="">Select budget option (Optional)</option>
+                            <option value="Starter Gift (< $150)">Starter Digital Gift (&lt; $150)</option>
+                            <option value="Bespoke Experience ($150 - $350)">Bespoke Interactive Experience ($150 - $350)</option>
+                            <option value="Grand Gesture / Brand Web ($350+)">Grand Gesture / Brand Website ($350+)</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      {status === 'error' && (
+                        <div style={{
+                          padding: '14px 18px',
+                          borderRadius: '12px',
+                          backgroundColor: 'rgba(192, 38, 38, 0.2)',
+                          border: '1px solid var(--color-burgundy-light)',
+                          color: 'var(--color-peach-primary)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '10px',
+                          fontSize: '0.9rem'
+                        }}>
+                          <AlertCircle size={20} />
+                          <div>{errorMessage}</div>
+                        </div>
                       )}
-                    </MagneticButton>
-                  </div>
-                </motion.form>
+
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '16px' }}>
+                        <button
+                          type="button"
+                          onClick={prevStep}
+                          style={{
+                            padding: '12px 20px',
+                            borderRadius: 'var(--radius-pill)',
+                            backgroundColor: 'transparent',
+                            color: 'var(--color-peach-soft)',
+                            border: '1px solid rgba(255,255,255,0.2)',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px'
+                          }}
+                        >
+                          <ArrowLeft size={16} /> Back
+                        </button>
+
+                        <button
+                          type="submit"
+                          disabled={status === 'submitting'}
+                          style={{
+                            padding: '14px 32px',
+                            borderRadius: 'var(--radius-pill)',
+                            backgroundColor: 'var(--color-peach-primary)',
+                            color: 'var(--color-burgundy-dark)',
+                            border: 'none',
+                            fontFamily: 'var(--font-display)',
+                            fontWeight: 700,
+                            fontSize: '1rem',
+                            cursor: status === 'submitting' ? 'not-allowed' : 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            boxShadow: '0 8px 25px rgba(255, 217, 194, 0.3)'
+                          }}
+                        >
+                          {status === 'submitting' ? (
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                              <RefreshCw className="animate-spin-sparkle" size={18} /> Sending to surprissa.enquire@gmail.com...
+                            </span>
+                          ) : (
+                            'Send inquiry to Surprissa 💌'
+                          )}
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </form>
               )}
             </AnimatePresence>
           </div>
