@@ -5,6 +5,8 @@ import confetti from 'canvas-confetti';
 import { useAudio } from '../ui/AudioEffects';
 import { MagneticButton } from '../ui/MagneticButton';
 import { BirthdayLiveExperience } from './BirthdayLiveExperience';
+import { AskOutLiveExperience } from './AskOutLiveExperience';
+import { AnniversaryLiveExperience } from './AnniversaryLiveExperience';
 
 export const LivePreviewModal = ({ demo, onClose }) => {
   const { playPop, playSparkle, playSuccess } = useAudio();
@@ -200,121 +202,12 @@ export const LivePreviewModal = ({ demo, onClose }) => {
 
           {/* 2. ASK THEM OUT PRODUCT DEMO REPLICA */}
           {demo.demoType === 'askOut' && (
-            <div style={{ textAlign: 'center', maxWidth: '640px', width: '100%', position: 'relative', zIndex: 10 }}>
-              {/* Decorative Threat / Cute Meme Assets */}
-              <div style={{ position: 'absolute', top: '-20px', left: '-20px', width: '90px', pointerEvents: 'none', opacity: 0.8 }} className="animate-float">
-                <img src="/assets/threat/cutest with knife.png" alt="Cute Threat" style={{ width: '100%', height: 'auto', borderRadius: '12px', filter: 'drop-shadow(0 6px 16px rgba(0,0,0,0.3))' }} />
-              </div>
-              <div style={{ position: 'absolute', bottom: '-20px', right: '-20px', width: '90px', pointerEvents: 'none', opacity: 0.8 }} className="animate-float-delayed">
-                <img src="/assets/threat/cutestwithgun.png" alt="Cute Gun" style={{ width: '100%', height: 'auto', borderRadius: '12px', filter: 'drop-shadow(0 6px 16px rgba(0,0,0,0.3))' }} />
-              </div>
-
-              <span style={{ fontSize: '0.85rem', color: 'var(--color-peach-primary)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700 }}>
-                High-Stakes Date Proposal Protocol
-              </span>
-
-              <div style={{
-                backgroundColor: 'var(--color-burgundy-primary)',
-                borderRadius: '24px',
-                padding: '44px 28px',
-                border: '2px solid var(--color-peach-primary)',
-                boxShadow: 'var(--shadow-glow)',
-                margin: '24px 0',
-                minHeight: '260px',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
-                {!askOutAccepted ? (
-                  <>
-                    <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(1.5rem, 3.5vw, 2.2rem)', color: 'var(--color-peach-primary)', marginBottom: '24px', fontStyle: 'italic', lineHeight: 1.3 }}>
-                      "Would you like to get coffee & ramen with me this Friday?"
-                    </h3>
-
-                    <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '12px' }}>
-                      <MagneticButton variant="primary" size="md" onClick={handleAskOutAccept}>
-                        YES! ABSOLUTELY
-                      </MagneticButton>
-
-                      <motion.button
-                        onMouseEnter={handleRunawayNo}
-                        onTouchStart={handleRunawayNo}
-                        onClick={handleRunawayNo}
-                        animate={{ x: runawayNoPos.x, y: runawayNoPos.y }}
-                        transition={{ type: 'spring', stiffness: 420, damping: 18 }}
-                        style={{
-                          padding: '12px 28px',
-                          borderRadius: 'var(--radius-pill)',
-                          border: '1px solid rgba(255,255,255,0.3)',
-                          background: 'transparent',
-                          color: 'var(--color-peach-soft)',
-                          cursor: 'pointer',
-                          fontFamily: 'var(--font-display)',
-                          fontWeight: 600,
-                          fontSize: '0.95rem'
-                        }}
-                      >
-                        No, I hate fun
-                      </motion.button>
-                    </div>
-                  </>
-                ) : (
-                  <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }}>
-                    <CheckCircle2 size={54} color="var(--color-peach-primary)" style={{ margin: '0 auto 14px' }} />
-                    <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.4rem', color: 'var(--color-peach-primary)', fontStyle: 'italic' }}>
-                      IT'S A DATE!
-                    </h3>
-                    <p style={{ color: 'var(--color-ivory)', marginTop: '8px', fontSize: '1.1rem', fontFamily: 'var(--font-handwriting)' }}>
-                      "Friday 7:00 PM • Coffee & Ramen • Officially locked in."
-                    </p>
-                  </motion.div>
-                )}
-              </div>
-            </div>
+            <AskOutLiveExperience onComplete={() => {}} />
           )}
 
           {/* 3. ANNIVERSARY PRODUCT DEMO REPLICA */}
           {demo.demoType === 'anniversary' && (
-            <div style={{ textAlign: 'center', maxWidth: '640px', width: '100%', position: 'relative', zIndex: 10 }}>
-              <div style={{ position: 'absolute', top: '-15px', right: '-15px', width: '90px', pointerEvents: 'none', opacity: 0.8 }} className="animate-float">
-                <img src="/assets/flowers/Pink flower.png" alt="Floral decor" style={{ width: '100%', height: 'auto', objectFit: 'contain' }} />
-              </div>
-
-              <div style={{
-                backgroundColor: 'var(--color-burgundy-primary)',
-                borderRadius: '24px',
-                padding: '40px 24px',
-                border: '2px solid var(--color-peach-primary)',
-                boxShadow: 'var(--shadow-glow)'
-              }}>
-                <span style={{ fontSize: '0.85rem', color: 'var(--color-peach-primary)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700 }}>
-                  Live Relationship Time Machine
-                </span>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2.8rem, 6vw, 4rem)', fontWeight: 800, color: 'var(--color-peach-primary)', margin: '12px 0' }}>
-                  1,248 Days
-                </div>
-                <p style={{ fontSize: '1.05rem', color: 'var(--color-peach-soft)', marginBottom: '24px' }}>
-                  = 29,952 Hours of stolen hoodies, midnight snack runs & pure love.
-                </p>
-
-                <div
-                  onClick={() => { playSparkle(); setMemoryFlipped(!memoryFlipped); }}
-                  style={{
-                    padding: '24px',
-                    backgroundColor: 'var(--color-burgundy-dark)',
-                    borderRadius: '16px',
-                    border: '1.5px dashed var(--color-peach-primary)',
-                    cursor: 'pointer',
-                    boxShadow: 'inset 0 0 15px rgba(0,0,0,0.4)'
-                  }}
-                >
-                  <p style={{ fontFamily: 'var(--font-handwriting)', fontSize: '1.6rem', color: 'var(--color-peach-primary)' }}>
-                    {memoryFlipped ? "'I still choose you every single day.'" : "Tap to flip private anniversary memory letter 💌"}
-                  </p>
-                </div>
-              </div>
-            </div>
+            <AnniversaryLiveExperience onComplete={() => {}} />
           )}
 
           {/* 4. APOLOGY PRODUCT DEMO REPLICA */}
