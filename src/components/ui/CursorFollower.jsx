@@ -15,37 +15,72 @@ export const CursorProvider = ({ children }) => {
   return (
     <CursorContext.Provider value={{ cursorText, setCursorText, clearCursorText }}>
       {children}
-      <CursorFollower text={cursorText} />
+      <CursorFollower manualText={cursorText} onClearManual={() => setCursorTextState('')} />
     </CursorContext.Provider>
   );
 };
 
 export const useCursor = () => useContext(CursorContext);
 
-const CursorFollower = ({ text }) => {
+const CursorFollower = ({ manualText, onClearManual }) => {
   const [enabled, setEnabled] = useState(false);
+  const [hoverText, setHoverText] = useState('');
   const cursorX = useSpring(-100, { stiffness: 450, damping: 28 });
   const cursorY = useSpring(-100, { stiffness: 450, damping: 28 });
 
   useEffect(() => {
-    // Only enable on fine pointer desktop devices & if reduced motion is not preferred
-    const isTouch = window.matchMedia('(pointer: coarse)').matches;
+    // Strictly disable on touch or mobile devices & if reduced motion is preferred
+    const isTouch = window.matchMedia('(pointer: coarse)').matches || ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isMobileWidth = window.innerWidth <= 768;
 
-    if (!isTouch && !prefersReducedMotion) {
+    if (!isTouch && !prefersReducedMotion && !isMobileWidth) {
       setEnabled(true);
+      
       const moveHandler = (e) => {
         cursorX.set(e.clientX);
         cursorY.set(e.clientY);
+
+        // Check element under cursor for data-cursor attribute
+        const target = e.target;
+        const cursorEl = target?.closest?.('[data-cursor]');
+        if (cursorEl) {
+          const text = cursorEl.getAttribute('data-cursor');
+          setHoverText(text || '');
+        } else {
+          setHoverText('');
+          if (manualText) onClearManual();
+        }
       };
-      window.addEventListener('mousemove', moveHandler);
-      return () => window.removeEventListener('mousemove', moveHandler);
+
+      const leaveHandler = () => {
+        setHoverText('');
+        if (manualText) onClearManual();
+      };
+
+      const scrollHandler = () => {
+        setHoverText('');
+        if (manualText) onClearManual();
+      };
+
+      window.addEventListener('mousemove', moveHandler, { passive: true });
+      document.addEventListener('mouseleave', leaveHandler);
+      window.addEventListener('scroll', scrollHandler, { passive: true });
+
+      return () => {
+        window.removeEventListener('mousemove', moveHandler);
+        document.removeEventListener('mouseleave', leaveHandler);
+        window.removeEventListener('scroll', scrollHandler);
+      };
+    } else {
+      setEnabled(false);
     }
-  }, [cursorX, cursorY]);
+  }, [cursorX, cursorY, manualText, onClearManual]);
 
   if (!enabled) return null;
 
-  const isTextActive = Boolean(text);
+  const currentText = hoverText || manualText;
+  const isTextActive = Boolean(currentText);
 
   return (
     <motion.div
@@ -65,17 +100,18 @@ const CursorFollower = ({ text }) => {
     >
       <motion.div
         animate={{
-          width: isTextActive ? 'auto' : '20px',
-          height: isTextActive ? 'auto' : '20px',
-          padding: isTextActive ? '6px 14px' : '0px',
+          width: isTextActive ? 'auto' : '16px',
+          height: isTextActive ? 'auto' : '16px',
+          padding: isTextActive ? '5px 12px' : '0px',
           borderRadius: isTextActive ? '20px' : '50%',
-          backgroundColor: isTextActive ? 'var(--color-peach-primary)' : 'rgba(255, 217, 194, 0.3)',
-          color: 'var(--color-burgundy-dark)'
+          backgroundColor: isTextActive ? 'var(--color-peach-primary)' : 'rgba(255, 217, 194, 0.25)',
+          color: 'var(--color-burgundy-dark)',
+          scale: isTextActive ? 1 : 1
         }}
-        transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+        transition={{ type: 'spring', stiffness: 450, damping: 26 }}
         style={{
           border: '1.5px solid var(--color-peach-primary)',
-          boxShadow: '0 0 20px rgba(255, 217, 194, 0.4)',
+          boxShadow: '0 0 16px rgba(255, 217, 194, 0.35)',
           fontFamily: 'var(--font-display)',
           fontWeight: 800,
           fontSize: '0.75rem',
@@ -83,10 +119,11 @@ const CursorFollower = ({ text }) => {
           whiteSpace: 'nowrap',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center'
+          justifyContent: 'center',
+          userSelect: 'none'
         }}
       >
-        {text}
+        {currentText}
       </motion.div>
     </motion.div>
   );

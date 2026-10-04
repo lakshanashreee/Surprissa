@@ -45,9 +45,9 @@ export const Footer = () => {
         <div>
           <Link to="/" style={{ display: 'inline-block', marginBottom: '16px' }}>
             <img
-              src="/logo.png"
+              src="/Website_logo-removebg-preview.png"
               alt="Surprissa Logo"
-              style={{ height: '48px', width: 'auto' }}
+              style={{ height: '48px', width: 'auto', objectFit: 'contain' }}
             />
           </Link>
           <p style={{

@@ -17,6 +17,7 @@ export const Contact = () => {
     whoIsItFor: '',
     lookingFor: 'Personal Experience',
     occasion: 'Birthday',
+    lifespan: 'Forever Vault (Permanent Keepsake)',
     message: '',
     budget: '',
     preferredDate: ''
@@ -114,6 +115,7 @@ export const Contact = () => {
       `Looking For: ${formData.lookingFor}\n` +
       `Occasion: ${formData.occasion}\n` +
       `Who is it for: ${formData.whoIsItFor}\n` +
+      `Website Lifespan / Expiry: ${formData.lifespan}\n` +
       `Preferred Date: ${formData.preferredDate || 'Flexible'}\n` +
       `Budget: ${formData.budget || 'Not specified'}\n\n` +
       `Message & Story:\n${formData.message}`
@@ -131,6 +133,7 @@ export const Contact = () => {
       whoIsItFor: '',
       lookingFor: 'Personal Experience',
       occasion: 'Birthday',
+      lifespan: 'Forever Vault (Permanent Keepsake)',
       message: '',
       budget: '',
       preferredDate: ''
@@ -585,7 +588,7 @@ export const Contact = () => {
                     </motion.div>
                   )}
 
-                  {/* STEP 4: Timing & Budget */}
+                  {/* STEP 4: Timing, Lifespan & Budget */}
                   {step === 4 && (
                     <motion.div
                       key="step4"
@@ -595,10 +598,50 @@ export const Contact = () => {
                       style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}
                     >
                       <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', color: 'var(--color-peach-primary)' }}>
-                        Step 4: Timing & Budget (Almost done!)
+                        Step 4: Timing & Lifespan (Almost done!)
                       </h3>
 
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
+                      {/* Lifespan / Expiry Selection */}
+                      <div>
+                        <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-peach-soft)', display: 'block', marginBottom: '8px' }}>
+                          Website Lifespan (How long should the link stay live?)
+                        </label>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '8px' }}>
+                          {[
+                            { label: '24 Hours', val: '24 Hours (Self-Destruct)' },
+                            { label: '48 Hours', val: '48 Hours (Weekend)' },
+                            { label: '7 Days', val: '7 Days (Celebration Week)' },
+                            { label: '30 Days', val: '30 Days (Month)' },
+                            { label: 'Forever Vault', val: 'Forever Vault (Permanent Keepsake)' }
+                          ].map((item) => {
+                            const isSelected = formData.lifespan === item.val;
+                            return (
+                              <button
+                                type="button"
+                                key={item.val}
+                                onClick={() => { playPop(); setFormData({ ...formData, lifespan: item.val }); }}
+                                style={{
+                                  padding: '10px 8px',
+                                  borderRadius: '10px',
+                                  border: '1.5px solid ' + (isSelected ? 'var(--color-peach-primary)' : 'rgba(255, 217, 194, 0.2)'),
+                                  backgroundColor: isSelected ? 'var(--color-peach-primary)' : 'rgba(24, 2, 2, 0.5)',
+                                  color: isSelected ? 'var(--color-burgundy-dark)' : 'var(--color-ivory)',
+                                  fontFamily: 'var(--font-display)',
+                                  fontWeight: 700,
+                                  fontSize: '0.82rem',
+                                  cursor: 'pointer',
+                                  textAlign: 'center',
+                                  transition: 'all 0.2s ease'
+                                }}
+                              >
+                                {item.label}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
                         <div>
                           <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-peach-soft)', display: 'block', marginBottom: '8px' }}>
                             Preferred Delivery Date

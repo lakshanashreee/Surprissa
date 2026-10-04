@@ -2,6 +2,22 @@
 
 export const PERSONAL_SERVICES = [
   {
+    id: "custom-surprise",
+    title: "100% Customizable Surprise",
+    tagline: "You dream up the crazy idea, we engineer the digital magic.",
+    description: "Got a wild, out-of-the-box concept? Custom escape-room clues, interactive games, multi-stage story reveals, audio soundboards, and custom expiry options from 24 hours to forever.",
+    icon: "Sparkles",
+    badge: "Infinite Possibilities",
+    features: [
+      "Custom lifespan: 24 Hours, 7 Days, or Forever Keepsake",
+      "Interactive mini-games & secret Easter eggs",
+      "Password protection & private lock screen",
+      "Custom audio scores & voice note embedding",
+      "Bespoke animations & personalized domain link"
+    ],
+    sampleTag: "Anything you can imagine"
+  },
+  {
     id: "birthday",
     title: "Birthday Websites",
     tagline: "The birthday card that obliterates all other birthday cards.",

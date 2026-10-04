@@ -3,21 +3,18 @@ import { motion } from 'framer-motion';
 import { Gift, Heart, Sparkles, Smile, Users, Zap, Eye } from 'lucide-react';
 import { PRODUCT_DEMOS } from '../../data/demos';
 import { useAudio } from '../ui/AudioEffects';
-import { useCursor } from '../ui/CursorFollower';
-import { MagneticButton } from '../ui/MagneticButton';
 
 export const HoverFocusCards = ({ onSelectDemo }) => {
   const [hoveredId, setHoveredId] = useState(null);
   const { playPop } = useAudio();
-  const { setCursorText, clearCursorText } = useCursor();
 
   const iconMap = { Gift, Heart, Sparkles, Smile, Users, Zap };
 
   return (
     <div style={{
       display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-      gap: '28px'
+      gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+      gap: '24px'
     }}>
       {PRODUCT_DEMOS.map((demo) => {
         const IconComp = iconMap[demo.iconName] || Sparkles;
@@ -28,27 +25,26 @@ export const HoverFocusCards = ({ onSelectDemo }) => {
         return (
           <motion.div
             key={demo.id}
+            data-cursor="TRY ME"
             onMouseEnter={() => {
               playPop();
               setHoveredId(demo.id);
-              setCursorText('TRY ME');
             }}
             onMouseLeave={() => {
               setHoveredId(null);
-              clearCursorText();
             }}
             animate={{
-              scale: isHovered ? 1.03 : isDimmed ? 0.96 : 1,
+              scale: isHovered ? 1.02 : isDimmed ? 0.97 : 1,
               opacity: isDimmed ? 0.45 : 1,
-              filter: isDimmed ? 'blur(2px)' : 'none'
+              filter: isDimmed ? 'blur(1.5px)' : 'none'
             }}
-            transition={{ duration: 0.35, ease: 'easeOut' }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
             onClick={() => onSelectDemo(demo)}
             style={{
               backgroundColor: 'var(--color-burgundy-primary)',
               border: '1.5px solid ' + (isHovered ? 'var(--color-peach-primary)' : 'var(--color-border-light)'),
               borderRadius: 'var(--radius-lg)',
-              padding: '32px 28px',
+              padding: 'clamp(24px, 4vw, 32px) clamp(20px, 3.5vw, 28px)',
               cursor: 'pointer',
               position: 'relative',
               overflow: 'hidden',
@@ -59,7 +55,7 @@ export const HoverFocusCards = ({ onSelectDemo }) => {
               minHeight: '320px'
             }}
           >
-            {/* Direction-Aware Peach Highlight Banner on Hover */}
+            {/* Direction-Aware Highlight Bar */}
             <motion.div
               initial={{ y: '-100%' }}
               animate={{ y: isHovered ? 0 : '-100%' }}
@@ -69,7 +65,7 @@ export const HoverFocusCards = ({ onSelectDemo }) => {
                 top: 0,
                 left: 0,
                 right: 0,
-                height: '6px',
+                height: '5px',
                 backgroundColor: 'var(--color-peach-primary)'
               }}
             />
@@ -77,7 +73,7 @@ export const HoverFocusCards = ({ onSelectDemo }) => {
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                 <span style={{
-                  fontSize: '0.8rem',
+                  fontSize: '0.78rem',
                   fontWeight: 700,
                   textTransform: 'uppercase',
                   letterSpacing: '0.06em',
@@ -105,7 +101,7 @@ export const HoverFocusCards = ({ onSelectDemo }) => {
 
               <h3 style={{
                 fontFamily: 'var(--font-display)',
-                fontSize: '1.55rem',
+                fontSize: 'clamp(1.35rem, 3vw, 1.55rem)',
                 color: 'var(--color-ivory)',
                 marginBottom: '6px'
               }}>
@@ -113,14 +109,14 @@ export const HoverFocusCards = ({ onSelectDemo }) => {
               </h3>
 
               {/* Text Reveal Layer on Hover */}
-              <div style={{ minHeight: '32px', margin: '8px 0 16px' }}>
+              <div style={{ minHeight: '30px', margin: '6px 0 14px' }}>
                 {isHovered ? (
                   <motion.p
-                    initial={{ opacity: 0, y: 6 }}
+                    initial={{ opacity: 0, y: 4 }}
                     animate={{ opacity: 1, y: 0 }}
                     style={{
                       fontFamily: 'var(--font-handwriting)',
-                      fontSize: '1.4rem',
+                      fontSize: '1.35rem',
                       color: 'var(--color-peach-primary)',
                       fontWeight: 700
                     }}
@@ -130,7 +126,7 @@ export const HoverFocusCards = ({ onSelectDemo }) => {
                 ) : (
                   <p style={{
                     fontFamily: 'var(--font-serif)',
-                    fontSize: '1.05rem',
+                    fontSize: '1rem',
                     fontStyle: 'italic',
                     color: 'var(--color-peach-soft)'
                   }}>
@@ -140,26 +136,26 @@ export const HoverFocusCards = ({ onSelectDemo }) => {
               </div>
 
               <p style={{
-                fontSize: '0.925rem',
+                fontSize: '0.9rem',
                 color: 'var(--color-peach-soft)',
-                lineHeight: 1.6,
+                lineHeight: 1.55,
                 marginBottom: '20px'
               }}>
                 {demo.description}
               </p>
             </div>
 
-            <div style={{ marginTop: 'auto', paddingTop: '16px' }}>
+            <div style={{ marginTop: 'auto', paddingTop: '14px' }}>
               <button style={{
                 width: '100%',
-                padding: '12px 20px',
+                padding: '11px 18px',
                 borderRadius: 'var(--radius-pill)',
                 backgroundColor: isHovered ? 'var(--color-peach-primary)' : 'rgba(255, 217, 194, 0.12)',
                 color: isHovered ? 'var(--color-burgundy-dark)' : 'var(--color-peach-primary)',
                 border: '1px solid var(--color-peach-primary)',
                 fontFamily: 'var(--font-display)',
                 fontWeight: 700,
-                fontSize: '0.9rem',
+                fontSize: '0.88rem',
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
                 display: 'inline-flex',
@@ -167,7 +163,7 @@ export const HoverFocusCards = ({ onSelectDemo }) => {
                 justifyContent: 'center',
                 gap: '8px'
               }}>
-                <Eye size={16} /> Test live demo
+                <Eye size={15} /> Test live demo
               </button>
             </div>
           </motion.div>

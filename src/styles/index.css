@@ -271,6 +271,30 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 4px;
 }
 
+/* Responsive Mobile & Touch Optimizations */
+@media (max-width: 768px) {
+  :root {
+    --radius-lg: 20px;
+  }
+  
+  html {
+    font-size: 15px;
+  }
+  
+  section {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  .desktop-only-nav {
+    display: none !important;
+  }
+  
+  .mobile-only-toggle {
+    display: flex !important;
+  }
+}
+
 /* Reduced Motion Support */
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {

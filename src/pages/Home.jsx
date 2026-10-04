@@ -21,6 +21,7 @@ export const Home = () => {
   const { setCursorText, clearCursorText } = useCursor();
 
   const handleOpenEnvelope = () => {
+    clearCursorText();
     playSuccess();
     setEnvelopeOpened(true);
     try {
@@ -47,11 +48,11 @@ export const Home = () => {
          =================================================== */}
       <section style={{
         position: 'relative',
-        minHeight: '88vh',
+        minHeight: '85vh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '70px 24px 50px',
+        padding: 'clamp(50px, 8vw, 80px) clamp(16px, 4vw, 24px) 40px',
         backgroundColor: 'var(--color-burgundy-deepest)',
         textAlign: 'center'
       }} className="bg-grain">
@@ -104,7 +105,7 @@ export const Home = () => {
             transition={{ duration: 0.6, delay: 0.1 }}
             style={{
               fontFamily: 'var(--font-serif)',
-              fontSize: 'clamp(2.4rem, 5.5vw, 4.4rem)',
+              fontSize: 'clamp(2.3rem, 5.5vw, 4.4rem)',
               fontWeight: 700,
               lineHeight: 1.15,
               color: 'var(--color-ivory)',
@@ -140,7 +141,7 @@ export const Home = () => {
               display: 'flex',
               flexWrap: 'wrap',
               justifyContent: 'center',
-              gap: '12px',
+              gap: '10px',
               marginBottom: '36px'
             }}
           >
@@ -159,13 +160,12 @@ export const Home = () => {
             {!envelopeOpened ? (
               <div
                 onClick={handleOpenEnvelope}
-                onMouseEnter={() => setCursorText('OPEN ME')}
-                onMouseLeave={clearCursorText}
+                data-cursor="OPEN ME"
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '12px',
-                  padding: '16px 28px',
+                  padding: '14px 24px',
                   borderRadius: 'var(--radius-pill)',
                   backgroundColor: 'var(--color-burgundy-dark)',
                   border: '2px dashed var(--color-peach-primary)',
@@ -174,7 +174,7 @@ export const Home = () => {
                   boxShadow: 'var(--shadow-glow)',
                   fontFamily: 'var(--font-display)',
                   fontWeight: 700,
-                  fontSize: '0.95rem',
+                  fontSize: '0.92rem',
                   userSelect: 'none'
                 }}
               >
@@ -187,16 +187,16 @@ export const Home = () => {
                 animate={{ scale: 1, opacity: 1 }}
                 style={{
                   display: 'inline-block',
-                  padding: '20px 32px',
+                  padding: '20px 28px',
                   borderRadius: '20px',
                   backgroundColor: 'var(--color-peach-soft)',
                   color: 'var(--color-burgundy-dark)',
                   border: '2px solid var(--color-burgundy-primary)',
                   boxShadow: 'var(--shadow-lg)',
-                  maxWidth: '600px'
+                  maxWidth: '92vw'
                 }}
               >
-                <p style={{ fontFamily: 'var(--font-handwriting)', fontSize: '1.7rem', fontWeight: 700, marginBottom: '4px' }}>
+                <p style={{ fontFamily: 'var(--font-handwriting)', fontSize: 'clamp(1.3rem, 3.5vw, 1.7rem)', fontWeight: 700, marginBottom: '4px' }}>
                   "WAIT... THIS IS A WEBSITE FOR A WEBSITE BUSINESS??"
                 </p>
                 <p style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)' }}>

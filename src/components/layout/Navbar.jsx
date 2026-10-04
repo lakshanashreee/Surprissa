@@ -53,12 +53,13 @@ export const Navbar = ({ onTriggerEasterEgg }) => {
         <div onClick={handleLogoClick} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
           <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
             <img
-              src="/logo.png"
+              src="/Website_logo-removebg-preview.png"
               alt="Surprissa Logo"
               style={{
-                height: '42px',
+                height: 'clamp(36px, 6.0vw, 70px)',
                 width: 'auto',
-                objectFit: 'contain'
+                objectFit: 'contain',
+                display: 'block'
               }}
             />
           </Link>
@@ -134,7 +135,7 @@ export const Navbar = ({ onTriggerEasterEgg }) => {
           {/* Desktop CTA Button */}
           <div className="desktop-only-nav">
             <MagneticButton to="/contact" variant="primary" size="sm">
-              Start a surprise ✨
+              <Sparkles size={14} /> Start a surprise
             </MagneticButton>
           </div>
 
@@ -197,7 +198,7 @@ export const Navbar = ({ onTriggerEasterEgg }) => {
 
               <div style={{ paddingTop: '10px' }}>
                 <MagneticButton to="/contact" variant="primary" size="md" onClick={() => setMobileMenuOpen(false)}>
-                  Start a surprise ✨
+                  <Sparkles size={16} /> Start a surprise
                 </MagneticButton>
               </div>
             </div>

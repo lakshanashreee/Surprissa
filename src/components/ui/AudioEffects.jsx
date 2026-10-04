@@ -131,8 +131,43 @@ export const AudioProvider = ({ children }) => {
     }
   };
 
+  const playFanfare = () => {
+    if (!soundEnabled || !audioCtx) return;
+    try {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      // Melodic celebratory sequence: G4, C5, E5, G5 (triumphant arpeggio & sustained chord)
+      const melody = [
+        { freq: 392.00, time: 0.00, dur: 0.15 },
+        { freq: 523.25, time: 0.12, dur: 0.15 },
+        { freq: 659.25, time: 0.24, dur: 0.18 },
+        { freq: 783.99, time: 0.38, dur: 0.70 },
+        { freq: 1046.50, time: 0.38, dur: 0.70 }
+      ];
+
+      melody.forEach(note => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        const startTime = audioCtx.currentTime + note.time;
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(note.freq, startTime);
+
+        gain.gain.setValueAtTime(0.12, startTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, startTime + note.dur);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start(startTime);
+        osc.stop(startTime + note.dur);
+      });
+    } catch (e) {
+      console.warn("Audio playback exception", e);
+    }
+  };
+
   return (
-    <AudioContext.Provider value={{ soundEnabled, toggleSound, playPop, playSparkle, playSuccess, playFlame }}>
+    <AudioContext.Provider value={{ soundEnabled, toggleSound, playPop, playSparkle, playSuccess, playFlame, playFanfare }}>
       {children}
     </AudioContext.Provider>
   );
