@@ -5,11 +5,9 @@ import { PRODUCT_DEMOS } from '../data/demos';
 import { Sticker } from '../components/ui/Sticker';
 import { MagneticButton } from '../components/ui/MagneticButton';
 import { LivePreviewModal } from '../components/interactive/LivePreviewModal';
-import { MiniGiftSandbox } from '../components/interactive/MiniGiftSandbox';
 import { DraggableCards } from '../components/interactive/DraggableCards';
 import { HoverFocusCards } from '../components/interactive/HoverFocusCards';
 import { TypewriterSubheading, EditorialMarquee } from '../components/interactive/TypewriterAndMarquee';
-import { RandomSurpriseWidget } from '../components/interactive/RandomSurpriseWidget';
 import { useAudio } from '../components/ui/AudioEffects';
 import { useCursor } from '../components/ui/CursorFollower';
 import confetti from 'canvas-confetti';
@@ -412,19 +410,7 @@ export const Home = () => {
       </section>
 
       {/* ===================================================
-          4. INTERACTIVE "TASTE OF MAGIC" SANDBOX
-         =================================================== */}
-      <section style={{
-        padding: '80px 24px',
-        backgroundColor: 'var(--color-burgundy-dark)',
-        position: 'relative'
-      }} className="bg-grain">
-        <MiniGiftSandbox />
-        <RandomSurpriseWidget />
-      </section>
-
-      {/* ===================================================
-          5. EDITORIAL MANIFESTO BANNER
+          4. EDITORIAL MANIFESTO BANNER
          =================================================== */}
       <section style={{
         padding: '80px 24px',
@@ -450,7 +436,7 @@ export const Home = () => {
             fontSize: '1.8rem',
             color: 'var(--color-peach-soft)'
           }}>
-            — The Surprissa Manifesto ✨
+            — The Surprissa Manifesto ✦
           </div>
         </div>
       </section>

@@ -56,33 +56,5 @@ export const PRODUCT_DEMOS = [
     demoType: "apology",
     hoverSecret: "Because 'my bad' wasn't enough.",
     highlights: ["Forgiveness meter slider", "Virtual treat selector", "Handwritten promise note"]
-  },
-  {
-    id: "best-friend",
-    title: "Partner In Crime Vault",
-    category: "Best Friend",
-    subtitle: "For the friend who knows too much",
-    description: "An inside-joke vault filled with unhinged memories, shared chaotic playlists, ugly photo unlocks, and a trophy for enduring each other.",
-    accentColor: "#FFF1E8",
-    tag: "Pure Chaos",
-    iconName: "Users",
-    url: "https://demo.surprissa.com/best-friend-vault",
-    demoType: "bestFriend",
-    hoverSecret: "For the real partner in crime.",
-    highlights: ["Inside-joke soundboard", "Locked photo secrets", "Bestie trivia quiz"]
-  },
-  {
-    id: "just-because",
-    title: "Unsolicited Sparkle of Joy",
-    category: "Just Because",
-    subtitle: "No occasion needed, just pure love",
-    description: "A digital scratch-card experience packed with random compliments, mini interactive games, and a virtual flower bouquet delivered to their inbox.",
-    accentColor: "#F3C4AA",
-    tag: "Random Act",
-    iconName: "Zap",
-    url: "https://demo.surprissa.com/just-because-joy",
-    demoType: "justBecause",
-    hoverSecret: "No reason needed, just joy.",
-    highlights: ["Interactive scratch-to-reveal", "Virtual flower bouquet", "Personalized compliment generator"]
   }
 ];

@@ -1161,7 +1161,7 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
             </button>
 
             <MagneticButton onClick={() => { playSuccess(); setCurrentLayer(4); }} variant="primary" size="md">
-              Shoot Cupid's Arrow 🏹 →
+              Shoot Cupid's Arrow →
             </MagneticButton>
           </div>
         </motion.div>
@@ -1306,9 +1306,13 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
                   <motion.div
                     initial={{ scale: 0.3, opacity: 0 }}
                     animate={{ scale: 1.15, opacity: 1 }}
-                    style={{ textAlign: 'center', paddingTop: '20px' }}
+                    style={{ textAlign: 'center', paddingTop: '10px' }}
                   >
-                    <div style={{ fontSize: '3.2rem', marginBottom: '8px' }}>💥💘✨</div>
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginBottom: '8px' }}>
+                      <Sparkles size={38} color="#FFD9C2" />
+                      <Heart size={38} fill="#FFD9C2" color="#FFD9C2" />
+                      <Sparkles size={38} color="#FFD9C2" />
+                    </div>
                     <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.8rem', color: '#FFD9C2', fontStyle: 'italic', margin: 0 }}>
                       BULLSEYE DIRECT HIT!
                     </h3>

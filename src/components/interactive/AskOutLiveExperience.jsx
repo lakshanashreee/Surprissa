@@ -25,9 +25,9 @@ export const AskOutLiveExperience = ({ onComplete }) => {
   // ==========================================
   // LAYER 2: Date Customizer State
   // ==========================================
-  const [selectedFood, setSelectedFood] = useState("Ramen & Dumplings 🍜");
-  const [selectedActivity, setSelectedActivity] = useState("Arcade & Mario Kart 🕹️");
-  const [selectedVibe, setSelectedVibe] = useState("Oversized Hoodies & Sneakers 👟");
+  const [selectedFood, setSelectedFood] = useState("Ramen & Dumplings");
+  const [selectedActivity, setSelectedActivity] = useState("Arcade & Mario Kart");
+  const [selectedVibe, setSelectedVibe] = useState("Oversized Hoodies & Sneakers");
 
   // ==========================================
   // LAYER 3: Runaway Proposal State
@@ -100,9 +100,9 @@ export const AskOutLiveExperience = ({ onComplete }) => {
     const randomY = (Math.random() - 0.5) * 240;
     setNoButtonPos({ x: randomX, y: randomY });
 
-    if (nextDodges === 1) setNoButtonText("Nope! Try again 💨");
-    else if (nextDodges === 2) setNoButtonText("Why are you still trying? 😭");
-    else if (nextDodges === 3) setNoButtonText("Literally impossible to click 🛡️");
+    if (nextDodges === 1) setNoButtonText("Nope! Try again");
+    else if (nextDodges === 2) setNoButtonText("Why are you still trying?");
+    else if (nextDodges === 3) setNoButtonText("Literally impossible to click");
     else if (nextDodges >= 4) setNoButtonText("Fine, YES (tiny)");
   };
 
@@ -255,7 +255,7 @@ export const AskOutLiveExperience = ({ onComplete }) => {
               {scanProgress === 0 && "Waiting for fingerprint contact..."}
               {scanProgress > 0 && scanProgress < 50 && "Analyzing humor compatibility... 32%"}
               {scanProgress >= 50 && scanProgress < 100 && "Detecting mutual weirdness... 88%"}
-              {scanProgress === 100 && "COMPATIBILITY: 100% (DANGEROUSLY HIGH) ✨"}
+              {scanProgress === 100 && "COMPATIBILITY: 100% (DANGEROUSLY HIGH) ✦"}
             </div>
           </div>
         </motion.div>
@@ -315,10 +315,10 @@ export const AskOutLiveExperience = ({ onComplete }) => {
               </span>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '10px' }}>
                 {[
-                  "Ramen & Dumplings 🍜",
-                  "Coffee & Pastries ☕",
-                  "Late-Night Pizza 🍕",
-                  "Iced Matcha & Boba 🧋"
+                  "Ramen & Dumplings",
+                  "Coffee & Pastries",
+                  "Late-Night Pizza",
+                  "Iced Matcha & Boba"
                 ].map((food) => (
                   <button
                     key={food}
@@ -349,10 +349,10 @@ export const AskOutLiveExperience = ({ onComplete }) => {
               </span>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '10px' }}>
                 {[
-                  "Arcade & Mario Kart 🕹️",
-                  "Bookstore Wandering 📚",
-                  "Stargazing & Music 🌌",
-                  "Ice Cream Taste War 🍦"
+                  "Arcade & Mario Kart",
+                  "Bookstore Wandering",
+                  "Stargazing & Music",
+                  "Ice Cream Taste War"
                 ].map((act) => (
                   <button
                     key={act}
@@ -383,9 +383,9 @@ export const AskOutLiveExperience = ({ onComplete }) => {
               </span>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '10px' }}>
                 {[
-                  "Oversized Hoodies & Sneakers 👟",
-                  "Matching Sunglasses 🕶️",
-                  "Dressed Like Movie Stars ✨"
+                  "Oversized Hoodies & Sneakers",
+                  "Matching Sunglasses",
+                  "Dressed Like Movie Stars"
                 ].map((vibe) => (
                   <button
                     key={vibe}
@@ -470,7 +470,7 @@ export const AskOutLiveExperience = ({ onComplete }) => {
 
             <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}>
               <MagneticButton variant="primary" size="md" onClick={handleAcceptProposal}>
-                YES! ABSOLUTELY 💖
+                YES! ABSOLUTELY
               </MagneticButton>
 
               <motion.button
@@ -598,7 +598,7 @@ export const AskOutLiveExperience = ({ onComplete }) => {
               }}
             >
               <Calendar size={16} />
-              {calendarAdded ? "Added to Calendar! 📅" : "Save To Calendar"}
+              {calendarAdded ? "Added to Calendar!" : "Save To Calendar"}
             </button>
 
             <button

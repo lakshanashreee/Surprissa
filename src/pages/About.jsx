@@ -60,14 +60,15 @@ export const About = () => {
           </motion.div>
 
           <h1 style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: 'clamp(2.5rem, 5.8vw, 4.5rem)',
-            fontWeight: 800,
+            fontFamily: 'var(--font-serif)',
+            fontSize: 'clamp(2.3rem, 5.5vw, 4.4rem)',
+            fontWeight: 700,
+            lineHeight: 1.15,
             color: 'var(--color-ivory)',
-            lineHeight: 1.08,
-            marginBottom: '28px'
+            marginBottom: '28px',
+            letterSpacing: '-0.01em'
           }}>
-            The internet can be personal again.
+            The internet can be <span style={{ color: 'var(--color-peach-primary)', fontStyle: 'italic' }}>personal again.</span>
           </h1>
 
           <p style={{
@@ -82,7 +83,7 @@ export const About = () => {
           </p>
 
           <div style={{ display: 'inline-block' }}>
-            <Sticker text="Pure Digital Craft ✨" icon={Sparkles} rotation={-4} />
+            <Sticker text="Pure Digital Craft" icon={Sparkles} rotation={-4} />
           </div>
         </div>
       </section>
@@ -131,8 +132,8 @@ export const About = () => {
             <Sparkles size={36} color="var(--color-peach-primary)" style={{ margin: '0 auto 12px' }} />
             <p style={{ fontFamily: 'var(--font-handwriting)', fontSize: '1.6rem', color: 'var(--color-peach-primary)', lineHeight: 1.5 }}>
               {noteFlipped
-                ? "✨ 'We believe code can carry emotion, laughter, and happy tears.'"
-                : "Tap this handwritten note to flip secret belief 💌"}
+                ? "“We believe code can carry emotion, laughter, and happy tears.”"
+                : "Tap this handwritten note to flip secret belief"}
             </p>
             <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', marginTop: '16px', display: 'inline-block' }}>
               (Click to toggle)
@@ -238,7 +239,7 @@ export const About = () => {
             }}
           >
             <Star size={18} fill={starClicked ? "var(--color-burgundy-dark)" : "none"} />
-            {starClicked ? "Easter Egg Activated! 🎉" : "Click this hidden star"}
+            {starClicked ? "Easter Egg Activated!" : "Click this hidden star"}
           </button>
         </div>
       </section>

@@ -105,7 +105,7 @@ export const EasterEggModal = ({ isOpen, onClose, message }) => {
               color: 'var(--color-peach-primary)',
               marginBottom: '12px'
             }}>
-              Secret Unlocked! 🔮
+              Secret Unlocked
             </h3>
 
             <p style={{
@@ -123,7 +123,7 @@ export const EasterEggModal = ({ isOpen, onClose, message }) => {
               gap: '12px'
             }}>
               <MagneticButton onClick={onClose} variant="primary">
-                Keep Exploring ✨
+                Keep Exploring
               </MagneticButton>
             </div>
           </motion.div>

@@ -168,13 +168,15 @@ export const Contact = () => {
             </span>
 
             <h1 style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(2.4rem, 5vw, 4rem)',
-              fontWeight: 800,
+              fontFamily: 'var(--font-serif)',
+              fontSize: 'clamp(2.3rem, 5.5vw, 4.4rem)',
+              fontWeight: 700,
+              lineHeight: 1.15,
               color: 'var(--color-ivory)',
-              marginBottom: '16px'
+              marginBottom: '16px',
+              letterSpacing: '-0.01em'
             }}>
-              Okay, tell us what you're thinking.
+              Okay, tell us what <span style={{ color: 'var(--color-peach-primary)', fontStyle: 'italic' }}>you're thinking.</span>
             </h1>
 
             <p style={{
@@ -265,7 +267,7 @@ export const Contact = () => {
                     color: 'var(--color-peach-primary)',
                     marginBottom: '12px'
                   }}>
-                    WE GOT IT 💌
+                    WE GOT IT
                   </h2>
 
                   <p style={{
@@ -309,7 +311,7 @@ export const Contact = () => {
                     </a>
 
                     <MagneticButton onClick={handleReset} variant="primary">
-                      Submit another idea ✨
+                      Submit another idea
                     </MagneticButton>
                   </div>
                 </motion.div>
@@ -749,7 +751,9 @@ export const Contact = () => {
                               <RefreshCw className="animate-spin-sparkle" size={18} /> Sending to surprissa.enquire@gmail.com...
                             </span>
                           ) : (
-                            'Send inquiry to Surprissa 💌'
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                              Send inquiry to Surprissa <Send size={16} />
+                            </span>
                           )}
                         </button>
                       </div>

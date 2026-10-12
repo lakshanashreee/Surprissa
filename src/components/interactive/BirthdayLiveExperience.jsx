@@ -301,14 +301,14 @@ export const BirthdayLiveExperience = ({ onComplete, recipientName = "Stacy" }) 
           colors: ['#8D0B0B', '#FFD9C2', '#FFF1E8']
         });
       } catch (err) {}
-      setPasswordFeedback("Password Verified! ✨ Unsealing letter...");
+      setPasswordFeedback("Password Verified! Unsealing letter...");
       setTimeout(() => {
         setPasswordModalOpen(false);
         setLetterUnsealed(true);
       }, 800);
     } else {
       playPop();
-      setPasswordFeedback("You are near! Yes yes, think about our favorite memories... you're so close! ✨");
+      setPasswordFeedback("You are near! Yes yes, think about our favorite memories... you're so close!");
     }
   };
 
@@ -704,7 +704,7 @@ export const BirthdayLiveExperience = ({ onComplete, recipientName = "Stacy" }) 
                 HAPPY BIRTHDAY, {recipientName.toUpperCase()}!!!
               </h2>
               <p style={{ fontFamily: 'var(--font-handwriting)', fontSize: '1.8rem', color: 'var(--color-ivory)', marginBottom: '28px' }}>
-                "Your wish has been officially recorded in the universe ✨"
+                "Your wish has been officially recorded in the universe."
               </p>
               <MagneticButton onClick={() => setCurrentStage(4)} variant="primary" size="md">
                 Continue to Birthday Vibe Check →
@@ -901,9 +901,9 @@ export const BirthdayLiveExperience = ({ onComplete, recipientName = "Stacy" }) 
           {/* TRUE 3D INDEPENDENT POLAROID FLIP CARDS */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginBottom: '28px', perspective: '1000px' }}>
             {[
-              { id: 'card1', img: '/assets/cat/birthdaycatwithflowers.png', caption: 'Partner In Crime', secret: 'You still owe me coffee from last month! ☕' },
-              { id: 'card2', img: '/assets/flowers/bouquet.png', caption: 'Virtual Bouquet Delivery', secret: 'Guaranteed to stay fresh forever 🌸' },
-              { id: 'card3', img: '/assets/stickers/cutestwithbouquet.png', caption: 'Certified Legend', secret: 'Most likely to make any room 10x brighter ✨' }
+              { id: 'card1', img: '/assets/cat/birthdaycatwithflowers.png', caption: 'Partner In Crime', secret: 'You still owe me coffee from last month!' },
+              { id: 'card2', img: '/assets/flowers/bouquet.png', caption: 'Virtual Bouquet Delivery', secret: 'Guaranteed to stay fresh forever.' },
+              { id: 'card3', img: '/assets/stickers/cutestwithbouquet.png', caption: 'Certified Legend', secret: 'Most likely to make any room 10x brighter.' }
             ].map((card) => {
               const isFlipped = !!flippedCards[card.id];
               return (
@@ -1155,7 +1155,7 @@ export const BirthdayLiveExperience = ({ onComplete, recipientName = "Stacy" }) 
                     )}
 
                     <MagneticButton type="submit" variant="primary" size="md">
-                      Unlock Letter 💌
+                      Unlock Letter
                     </MagneticButton>
                   </form>
                 </motion.div>

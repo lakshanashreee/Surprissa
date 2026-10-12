@@ -48,13 +48,15 @@ export const Services = () => {
           </span>
 
           <h1 style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: 'clamp(2.5rem, 5.5vw, 4.2rem)',
-            fontWeight: 800,
+            fontFamily: 'var(--font-serif)',
+            fontSize: 'clamp(2.3rem, 5.5vw, 4.4rem)',
+            fontWeight: 700,
+            lineHeight: 1.15,
             color: 'var(--color-ivory)',
-            marginBottom: '20px'
+            marginBottom: '20px',
+            letterSpacing: '-0.01em'
           }}>
-            Surprises, personal sites & digital experiences.
+            Surprises, personal sites & <span style={{ color: 'var(--color-peach-primary)', fontStyle: 'italic' }}>digital experiences.</span>
           </h1>
 
           <p style={{
@@ -72,8 +74,8 @@ export const Services = () => {
           <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', flexWrap: 'wrap' }}>
             {[
               { id: 'all', label: 'All Services' },
-              { id: 'personal', label: 'Personal Experiences ❤️' },
-              { id: 'creative', label: 'Creative Web & Brands 🚀' }
+              { id: 'personal', label: 'Personal Experiences' },
+              { id: 'creative', label: 'Creative Web & Brands' }
             ].map(tab => (
               <button
                 key={tab.id}
@@ -110,7 +112,7 @@ export const Services = () => {
             <div style={{ marginBottom: '80px' }}>
               <div style={{ marginBottom: '32px' }}>
                 <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '2rem', color: 'var(--color-peach-primary)' }}>
-                  Personal Experiences 🎁
+                  Personal Experiences
                 </h2>
                 <p style={{ color: 'var(--color-peach-soft)', fontSize: '1.05rem' }}>
                   Bespoke digital gifts made for your favorite humans & unforgettable moments.
@@ -248,7 +250,7 @@ export const Services = () => {
             <div>
               <div style={{ marginBottom: '32px' }}>
                 <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '2rem', color: 'var(--color-peach-primary)' }}>
-                  Creative Web & Brand Websites 🚀
+                  Creative Web & Brand Websites
                 </h2>
                 <p style={{ color: 'var(--color-peach-soft)', fontSize: '1.05rem' }}>
                   For creators, studios, and brands who want a web presence that feels like art.

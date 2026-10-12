@@ -169,7 +169,7 @@ export const Footer = () => {
             color: 'var(--color-peach-primary)',
             marginBottom: '14px'
           }}>
-            The Surprise Dispatch 💌
+            The Surprise Dispatch
           </h4>
           <p style={{ fontSize: '0.85rem', color: 'var(--color-peach-soft)', marginBottom: '14px' }}>
             Zero spam. Only rare drops of Internet magic & secret templates.
@@ -217,7 +217,7 @@ export const Footer = () => {
               fontSize: '0.85rem',
               fontWeight: 600
             }}>
-              You're on the list! ✨
+              You're on the list!
             </div>
           )}
         </div>

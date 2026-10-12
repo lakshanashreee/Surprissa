@@ -7,6 +7,7 @@ import { MagneticButton } from '../ui/MagneticButton';
 import { BirthdayLiveExperience } from './BirthdayLiveExperience';
 import { AskOutLiveExperience } from './AskOutLiveExperience';
 import { AnniversaryLiveExperience } from './AnniversaryLiveExperience';
+import { ApologyLiveExperience } from './ApologyLiveExperience';
 
 export const LivePreviewModal = ({ demo, onClose }) => {
   const { playPop, playSparkle, playSuccess } = useAudio();
@@ -212,41 +213,7 @@ export const LivePreviewModal = ({ demo, onClose }) => {
 
           {/* 4. APOLOGY PRODUCT DEMO REPLICA */}
           {demo.demoType === 'apology' && (
-            <div style={{ textAlign: 'center', maxWidth: '640px', width: '100%', position: 'relative', zIndex: 10 }}>
-              {/* Cute Crying Stickers */}
-              <div style={{ position: 'absolute', top: '-20px', left: '-20px', width: '90px', pointerEvents: 'none', opacity: 0.8 }} className="animate-float">
-                <img src="/assets/sorry/cutestcryyying.png" alt="Crying Cute" style={{ width: '100%', height: 'auto', borderRadius: '12px', filter: 'drop-shadow(0 6px 16px rgba(0,0,0,0.3))' }} />
-              </div>
-
-              <div style={{
-                backgroundColor: 'var(--color-burgundy-primary)',
-                borderRadius: '24px',
-                padding: '40px 24px',
-                border: '2px solid var(--color-peach-primary)',
-                boxShadow: 'var(--shadow-glow)'
-              }}>
-                <span style={{ fontSize: '0.85rem', color: 'var(--color-peach-primary)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700 }}>
-                  Interactive Forgiveness Peace Meter
-                </span>
-
-                <div style={{ fontSize: '1.5rem', fontFamily: 'var(--font-display)', color: 'var(--color-peach-primary)', margin: '18px 0' }}>
-                  Current Anger Level: {forgiveScore}%
-                </div>
-
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={forgiveScore}
-                  onChange={(e) => { setForgiveScore(e.target.value); playPop(); }}
-                  style={{ width: '80%', accentColor: 'var(--color-peach-primary)', cursor: 'pointer', height: '8px' }}
-                />
-
-                <p style={{ marginTop: '24px', fontFamily: 'var(--font-handwriting)', fontSize: '1.7rem', color: 'var(--color-peach-soft)' }}>
-                  {forgiveScore < 30 ? "'You better bring boba & iced matcha immediately.'" : forgiveScore < 70 ? "'Apology currently under executive consideration...'" : "'Officially forgiven! Boba peace offering accepted! 🌸'" }
-                </p>
-              </div>
-            </div>
+            <ApologyLiveExperience onComplete={() => {}} />
           )}
 
           {/* 5. BEST FRIEND PRODUCT DEMO REPLICA */}
