@@ -11,7 +11,6 @@ import { TypewriterSubheading, EditorialMarquee } from '../components/interactiv
 import { useAudio } from '../components/ui/AudioEffects';
 import { useCursor } from '../components/ui/CursorFollower';
 import confetti from 'canvas-confetti';
-
 export const Home = () => {
   const [selectedDemo, setSelectedDemo] = useState(null);
   const [envelopeOpened, setEnvelopeOpened] = useState(false);
