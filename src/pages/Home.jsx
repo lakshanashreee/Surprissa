@@ -2,34 +2,15 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles, Heart, Gift, Smile, Send, Flame, MessageCircle, Star, Zap, Eye } from 'lucide-react';
 import { PRODUCT_DEMOS } from '../data/demos';
-import { Sticker } from '../components/ui/Sticker';
 import { MagneticButton } from '../components/ui/MagneticButton';
 import { LivePreviewModal } from '../components/interactive/LivePreviewModal';
-import { DraggableCards } from '../components/interactive/DraggableCards';
 import { HoverFocusCards } from '../components/interactive/HoverFocusCards';
-import { TypewriterSubheading, EditorialMarquee } from '../components/interactive/TypewriterAndMarquee';
+import { EditorialMarquee } from '../components/interactive/TypewriterAndMarquee';
 import { useAudio } from '../components/ui/AudioEffects';
-import { useCursor } from '../components/ui/CursorFollower';
-import confetti from 'canvas-confetti';
+
 export const Home = () => {
   const [selectedDemo, setSelectedDemo] = useState(null);
-  const [envelopeOpened, setEnvelopeOpened] = useState(false);
-  const { playPop, playSuccess } = useAudio();
-  const { setCursorText, clearCursorText } = useCursor();
-
-  const handleOpenEnvelope = () => {
-    clearCursorText();
-    playSuccess();
-    setEnvelopeOpened(true);
-    try {
-      confetti({
-        particleCount: 110,
-        spread: 85,
-        origin: { y: 0.5 },
-        colors: ['#8D0B0B', '#FFD9C2', '#FFF1E8']
-      });
-    } catch (e) {}
-  };
+  const { playPop } = useAudio();
 
   const scrollToDemos = () => {
     playPop();
@@ -119,101 +100,36 @@ export const Home = () => {
             </span>
           </motion.h1>
 
-          {/* Interactive Typewriter Subheading */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            style={{ marginBottom: '28px' }}
-          >
-            <TypewriterSubheading />
-          </motion.div>
-
-          {/* Clean Horizontal Sticker Shelf (No overlap with text!) */}
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
+          {/* Subheading: Clean, Personal & Crystal Clear for First-Time Visitors */}
+          <motion.p
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.25 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
             style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              justifyContent: 'center',
-              gap: '10px',
-              marginBottom: '36px'
+              fontFamily: 'var(--font-serif)',
+              fontSize: 'clamp(1.15rem, 2.5vw, 1.45rem)',
+              lineHeight: 1.6,
+              color: 'var(--color-peach-soft)',
+              maxWidth: '680px',
+              margin: '0 auto 36px',
+              fontWeight: 400
             }}
           >
-            <Sticker text="No boring texts allowed" icon={MessageCircle} rotation={-2} />
-            <Sticker text="Made for your favourite human" icon={Heart} color="var(--color-peach-soft)" rotation={3} />
-            <Sticker text="Warning: May cause happy tears" icon={Sparkles} color="var(--color-burgundy-primary)" textColor="var(--color-peach-primary)" rotation={-3} />
-          </motion.div>
-
-          {/* Hero Interactive Unwrapping Box */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            style={{ marginBottom: '36px' }}
-          >
-            {!envelopeOpened ? (
-              <div
-                onClick={handleOpenEnvelope}
-                data-cursor="OPEN ME"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '12px',
-                  padding: '14px 24px',
-                  borderRadius: 'var(--radius-pill)',
-                  backgroundColor: 'var(--color-burgundy-dark)',
-                  border: '2px dashed var(--color-peach-primary)',
-                  color: 'var(--color-peach-primary)',
-                  cursor: 'pointer',
-                  boxShadow: 'var(--shadow-glow)',
-                  fontFamily: 'var(--font-display)',
-                  fontWeight: 700,
-                  fontSize: '0.92rem',
-                  userSelect: 'none'
-                }}
-              >
-                <Gift size={20} />
-                <span>Tap to unwrap a live preview gift</span>
-              </div>
-            ) : (
-              <motion.div
-                initial={{ scale: 0.85, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                style={{
-                  display: 'inline-block',
-                  padding: '20px 28px',
-                  borderRadius: '20px',
-                  backgroundColor: 'var(--color-peach-soft)',
-                  color: 'var(--color-burgundy-dark)',
-                  border: '2px solid var(--color-burgundy-primary)',
-                  boxShadow: 'var(--shadow-lg)',
-                  maxWidth: '92vw'
-                }}
-              >
-                <p style={{ fontFamily: 'var(--font-handwriting)', fontSize: 'clamp(1.3rem, 3.5vw, 1.7rem)', fontWeight: 700, marginBottom: '4px' }}>
-                  "WAIT... THIS IS A WEBSITE FOR A WEBSITE BUSINESS??"
-                </p>
-                <p style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)' }}>
-                  Yes! Surprissa turns your inside jokes, memories & milestones into custom digital experiences.
-                </p>
-              </motion.div>
-            )}
-          </motion.div>
+            We turn your inside jokes, memories & milestones into custom, one-of-a-kind digital gifts & interactive surprise websites.
+          </motion.p>
 
           {/* Hero CTAs */}
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.35 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
             style={{
               display: 'flex',
               flexWrap: 'wrap',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '16px'
+              gap: '16px',
+              marginBottom: '32px'
             }}
           >
             <MagneticButton onClick={scrollToDemos} variant="primary" size="lg">
@@ -224,16 +140,43 @@ export const Home = () => {
               Make one for someone →
             </MagneticButton>
           </motion.div>
+
+          {/* Clean Trust Strip */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: '12px 24px',
+              fontSize: '0.88rem',
+              fontFamily: 'var(--font-display)',
+              fontWeight: 600,
+              letterSpacing: '0.02em',
+              color: 'var(--color-peach-soft)',
+              opacity: 0.85
+            }}
+          >
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <Sparkles size={15} color="var(--color-peach-primary)" /> 100% Bespoke & Personal
+            </span>
+            <span style={{ opacity: 0.35 }}>•</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <Heart size={15} color="var(--color-peach-primary)" /> Made for Your Favourite Person
+            </span>
+            <span style={{ opacity: 0.35 }}>•</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <Gift size={15} color="var(--color-peach-primary)" /> Guaranteed Happy Tears
+            </span>
+          </motion.div>
         </div>
       </section>
 
       {/* Editorial Infinite Marquee */}
       <EditorialMarquee />
-
-      {/* Draggable Cards Physics Sandbox */}
-      <section style={{ backgroundColor: 'var(--color-burgundy-dark)', padding: '20px 0' }}>
-        <DraggableCards />
-      </section>
 
       {/* ===================================================
           2. PRODUCT DEMOS SECTION (Focus & Direction-Aware Cards)

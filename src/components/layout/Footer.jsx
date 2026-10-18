@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, Sparkles, Send } from 'lucide-react';
+import { Heart, Sparkles, Send, RefreshCw } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useAudio } from '../ui/AudioEffects';
 import { MagneticButton } from '../ui/MagneticButton';
@@ -8,20 +8,45 @@ import { MagneticButton } from '../ui/MagneticButton';
 export const Footer = () => {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { playPop, playSuccess } = useAudio();
 
-  const handleSubscribe = (e) => {
+  const handleSubscribe = async (e) => {
     e.preventDefault();
-    if (!email.trim()) return;
-    playSuccess();
-    setSubscribed(true);
+    if (!email.trim() || isSubmitting) return;
+    setIsSubmitting(true);
+    playPop();
+
+    const endpoint = import.meta.env.VITE_FORMSPREE_ENDPOINT || 'https://formspree.io/f/mqparkyq';
     try {
-      confetti({
-        particleCount: 70,
-        spread: 60,
-        origin: { y: 0.85 }
+      await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          email: email.trim(),
+          _subject: `New Newsletter Subscriber: ${email.trim()}`,
+          formType: 'The Surprise Dispatch Newsletter',
+          recipient: 'surprissa.enquire@gmail.com',
+          message: `Please add ${email.trim()} to The Surprise Dispatch secret drops.`
+        })
       });
-    } catch (err) {}
+    } catch (err) {
+      console.warn('Newsletter submission notice:', err);
+    } finally {
+      setIsSubmitting(false);
+      playSuccess();
+      setSubscribed(true);
+      try {
+        confetti({
+          particleCount: 70,
+          spread: 60,
+          origin: { y: 0.85 }
+        });
+      } catch (err) { }
+    }
   };
 
   return (
@@ -112,7 +137,7 @@ export const Footer = () => {
           </h4>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
             <a
-              href="https://instagram.com"
+              href="https://www.instagram.com/surprissa/"
               target="_blank"
               rel="noopener noreferrer"
               onClick={playPop}
@@ -179,8 +204,10 @@ export const Footer = () => {
             <form onSubmit={handleSubscribe} style={{ display: 'flex', gap: '8px' }}>
               <input
                 type="email"
-                placeholder="your@email.com"
+                required
+                placeholder="your@email.com/ Instagram ID"
                 value={email}
+                disabled={isSubmitting}
                 onChange={(e) => setEmail(e.target.value)}
                 style={{
                   padding: '10px 14px',
@@ -190,22 +217,32 @@ export const Footer = () => {
                   color: 'var(--color-ivory)',
                   fontSize: '0.85rem',
                   outline: 'none',
-                  flex: 1
+                  flex: 1,
+                  opacity: isSubmitting ? 0.6 : 1
                 }}
               />
               <button
                 type="submit"
+                disabled={isSubmitting}
                 style={{
                   padding: '10px 16px',
                   borderRadius: 'var(--radius-pill)',
                   backgroundColor: 'var(--color-peach-primary)',
                   color: 'var(--color-burgundy-dark)',
                   border: 'none',
-                  cursor: 'pointer',
-                  fontWeight: 700
+                  cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                  fontWeight: 700,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  opacity: isSubmitting ? 0.7 : 1
                 }}
               >
-                <Send size={14} />
+                {isSubmitting ? (
+                  <RefreshCw size={14} className="animate-spin-sparkle" />
+                ) : (
+                  <Send size={14} />
+                )}
               </button>
             </form>
           ) : (

@@ -93,7 +93,7 @@ export const ApologyLiveExperience = ({ onComplete }) => {
       id: 1,
       title: "I Miss That Smile",
       subtitle: "Chapter of Warmth",
-      img: "/assets/flowers/Pink flower.png",
+      img: "/assets/Couple photos/Couples (rose hiding face).jpg",
       quote: "The world is 100x colder and dimmer when you're upset with me. Your smile is my daily fuel.",
       frameColor: "#D4AF37",
       tilt: -4
@@ -101,9 +101,9 @@ export const ApologyLiveExperience = ({ onComplete }) => {
     {
       id: 2,
       title: "Please Don't Stay Mad",
-      subtitle: "Guilty Mascot",
-      img: "/assets/sorry/cutestcryyying.png",
-      quote: "Look at this face. It is in desperate, urgent need of one warm hug and a second chance.",
+      subtitle: "Gentle Moments",
+      img: "/assets/Couple photos/Head patting cute.jpg",
+      quote: "Look at us. We are meant to make each other laugh, not sad. I need my favorite human back.",
       frameColor: "#E0A96D",
       tilt: 3
     },
@@ -111,7 +111,7 @@ export const ApologyLiveExperience = ({ onComplete }) => {
       id: 3,
       title: "I'm Genuinely So Sorry",
       subtitle: "Sincere Remorse",
-      img: "/assets/cat/birthdaycatwithflowers.png",
+      img: "/assets/Couple photos/Flowers in head.jpg",
       quote: "I hate that I caused you even one second of frustration. You deserve only peace and affection.",
       frameColor: "#D4AF37",
       tilt: -2
@@ -119,9 +119,9 @@ export const ApologyLiveExperience = ({ onComplete }) => {
     {
       id: 4,
       title: "A Fresh Reset",
-      subtitle: "Peace Bouquet",
-      img: "/assets/flowers/bouquet.png",
-      quote: "Sending virtual flowers, infinite patience, and a promise to always listen with an open heart.",
+      subtitle: "Unconditional Laughter",
+      img: "/assets/Couple photos/Kicking.jpg",
+      quote: "No ego, just us. I promise to listen with an open heart and always choose you.",
       frameColor: "#E0A96D",
       tilt: 4
     },
@@ -129,7 +129,7 @@ export const ApologyLiveExperience = ({ onComplete }) => {
       id: 5,
       title: "You & Me, Forever",
       subtitle: "Unbreakable Bond",
-      img: "/assets/stickers/cutestwithbouquet.png",
+      img: "/assets/Couple photos/Piggy ride.jpg",
       quote: "Arguments come and go, but you are the only person I ever want to come home to. Always.",
       frameColor: "#D4AF37",
       tilt: -3

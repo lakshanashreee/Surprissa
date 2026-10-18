@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Heart, Flame, Volume2, CheckCircle2, RotateCcw, Send, Gift, PartyPopper, ArrowRight, Play, Pause, Music, RefreshCw, X, Lock, KeyRound, Mail, Check } from 'lucide-react';
+import { Sparkles, Heart, Flame, Volume2, CheckCircle2, RotateCcw, Send, Gift, PartyPopper, ArrowRight, ArrowLeft, Star, Play, Pause, Music, RefreshCw, X, Lock, KeyRound, Mail, Check, Delete } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useAudio } from '../ui/AudioEffects';
 import { MagneticButton } from '../ui/MagneticButton';
@@ -59,36 +59,92 @@ export const BirthdayLiveExperience = ({ onComplete, recipientName = "Stacy" }) 
   // STAGE 5: Grand Reveal & Secret Letter Heart Unlock State
   // ==========================================
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
-  const [flippedCards, setFlippedCards] = useState({});
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
-  const [passwordInput, setPasswordInput] = useState("");
-  const [passwordFeedback, setPasswordFeedback] = useState("");
+  const [passcode, setPasscode] = useState("");
+  const [passcodeFeedback, setPasscodeFeedback] = useState("");
+  const [passcodeVerified, setPasscodeVerified] = useState(false);
   const [letterUnsealed, setLetterUnsealed] = useState(false);
+  const [lovedPhotos, setLovedPhotos] = useState({});
+  const [showPhotoMuseum, setShowPhotoMuseum] = useState(false);
+  const voiceNoteAudioRef = useRef(null);
 
-  // Clear any timers on unmount
+  // Clear timers and audio on unmount
   useEffect(() => {
     return () => {
       if (quizTimerRef.current) clearTimeout(quizTimerRef.current);
+      if (voiceNoteAudioRef.current) {
+        voiceNoteAudioRef.current.pause();
+        voiceNoteAudioRef.current = null;
+      }
     };
   }, []);
 
-  // Check if all 3 polaroid cards have been flipped
-  const allCardsFlipped = !!(flippedCards['card1'] && flippedCards['card2'] && flippedCards['card3']);
-
-  // Play heart shower sound when all 3 cards are flipped
+  // Keyboard navigation for passcode modal
   useEffect(() => {
-    if (allCardsFlipped && !letterUnsealed) {
-      playSparkle();
-      try {
-        confetti({
-          particleCount: 70,
-          spread: 80,
-          origin: { y: 0.6 },
-          colors: ['#FFD9C2', '#8D0B0B', '#FFF1E8']
-        });
-      } catch (e) {}
+    if (!passwordModalOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key >= '0' && e.key <= '9') {
+        handleKeypadPress(e.key);
+      } else if (e.key === 'Backspace') {
+        handleKeypadBackspace();
+      } else if (e.key === 'Escape') {
+        setPasswordModalOpen(false);
+      } else if (e.key === 'Enter') {
+        validatePasscode(passcode);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [passwordModalOpen, passcode, passcodeVerified]);
+
+  // Curated Couple Photos Museum Exhibit List
+  const coupleMuseumPhotos = [
+    {
+      id: 'm1',
+      img: '/assets/Couple photos/Couples (rose hiding face).jpg',
+      title: 'The Rose Thief',
+      caption: "Hiding behind flowers like you didn't just steal my whole heart.",
+      sticker: '/assets/flowers/bouquet.png',
+      dateStamp: 'Chapter 01',
+      rotation: -2.5
+    },
+    {
+      id: 'm2',
+      img: '/assets/Couple photos/Flowers in head.jpg',
+      title: 'Crowning My Human',
+      caption: 'Flower crown era was peak unconditional happiness.',
+      sticker: '/assets/flowers/Pink flower.png',
+      dateStamp: 'Chapter 02',
+      rotation: 2
+    },
+    {
+      id: 'm3',
+      img: '/assets/Couple photos/Head patting cute.jpg',
+      title: 'Gentle Chaos',
+      caption: 'The only person on earth allowed to mess up my hair.',
+      sticker: '/assets/stickers/cutestwithbouquet.png',
+      dateStamp: 'Chapter 03',
+      rotation: -1.5
+    },
+    {
+      id: 'm4',
+      img: '/assets/Couple photos/Kicking.jpg',
+      title: 'Partners In Crime',
+      caption: 'Zero seriousness, 100% mutual unhinged laughter forever.',
+      sticker: '/assets/cat/birthdaycatwithflowers.png',
+      dateStamp: 'Chapter 04',
+      rotation: 3
+    },
+    {
+      id: 'm5',
+      img: '/assets/Couple photos/Piggy ride.jpg',
+      title: 'Carrying The World',
+      caption: 'Wherever life takes us, you will never have to walk alone.',
+      sticker: '/assets/cat/catwiththreebouquet.png',
+      dateStamp: 'Chapter 05',
+      rotation: -2
     }
-  }, [allCardsFlipped, letterUnsealed]);
+  ];
 
   // Continuous celebratory confetti cannons
   const triggerConfettiCannons = () => {
@@ -97,7 +153,7 @@ export const BirthdayLiveExperience = ({ onComplete, recipientName = "Stacy" }) 
       const animationEnd = Date.now() + duration;
       const defaults = { startVelocity: 40, spread: 360, ticks: 80, zIndex: 999999 };
 
-      const interval = setInterval(function() {
+      const interval = setInterval(function () {
         const timeLeft = animationEnd - Date.now();
         if (timeLeft <= 0) {
           return clearInterval(interval);
@@ -106,12 +162,16 @@ export const BirthdayLiveExperience = ({ onComplete, recipientName = "Stacy" }) 
         confetti({ ...defaults, particleCount, origin: { x: 0.15, y: 0.55 }, colors: ['#8D0B0B', '#FFD9C2', '#FFF1E8', '#FFB703', '#FB8500'] });
         confetti({ ...defaults, particleCount, origin: { x: 0.85, y: 0.55 }, colors: ['#8D0B0B', '#FFD9C2', '#FFF1E8', '#FFB703', '#FB8500'] });
       }, 200);
-    } catch (e) {}
+    } catch (e) { }
   };
 
   // Comprehensive Replay Reset
   const handleReplay = () => {
     if (quizTimerRef.current) clearTimeout(quizTimerRef.current);
+    if (voiceNoteAudioRef.current) {
+      voiceNoteAudioRef.current.pause();
+      voiceNoteAudioRef.current.currentTime = 0;
+    }
     playPop();
     setCurrentStage(1);
     setBoxStep(1);
@@ -129,12 +189,13 @@ export const BirthdayLiveExperience = ({ onComplete, recipientName = "Stacy" }) 
     setQuizStep(1);
     setNoButtonPos({ x: 0, y: 0 });
     setQuizFeedback("");
-    setFlippedCards({});
     setPasswordModalOpen(false);
-    setPasswordInput("");
-    setPasswordFeedback("");
+    setPasscode("");
+    setPasscodeFeedback("");
+    setPasscodeVerified(false);
     setLetterUnsealed(false);
     setIsPlayingAudio(false);
+    setLovedPhotos({});
   };
 
   // --- STAGE 1: Russian Doll Box Handlers ---
@@ -153,7 +214,7 @@ export const BirthdayLiveExperience = ({ onComplete, recipientName = "Stacy" }) 
       setBoxMsg("Hold on, one more tiny one...");
     } else if (boxStep === 4) {
       playSuccess();
-      try { confetti({ particleCount: 80, spread: 70 }); } catch (e) {}
+      try { confetti({ particleCount: 80, spread: 70 }); } catch (e) { }
       setBoxMsg("Okay NOW there's actually something. Let's see how loved you are...");
       setTimeout(() => {
         setCurrentStage(2);
@@ -171,7 +232,7 @@ export const BirthdayLiveExperience = ({ onComplete, recipientName = "Stacy" }) 
 
     if (updated.length === 10) {
       playSuccess();
-      try { confetti({ particleCount: 110, spread: 80 }); } catch (e) {}
+      try { confetti({ particleCount: 110, spread: 80 }); } catch (e) { }
       setTimeout(() => {
         setCurrentStage(3);
       }, 1600);
@@ -245,6 +306,7 @@ export const BirthdayLiveExperience = ({ onComplete, recipientName = "Stacy" }) 
   };
 
   const handleQuizYes = () => {
+    if (quizFeedback) return; // Allow user to read the message for 2 seconds
     playSuccess();
     if (quizTimerRef.current) clearTimeout(quizTimerRef.current);
 
@@ -254,14 +316,14 @@ export const BirthdayLiveExperience = ({ onComplete, recipientName = "Stacy" }) 
         setQuizFeedback("");
         setNoButtonPos({ x: 0, y: 0 });
         setQuizStep(2);
-      }, 750);
+      }, 1500);
     } else if (quizStep === 2) {
       setQuizFeedback("Correct. But aging like absolute royalty.");
       quizTimerRef.current = setTimeout(() => {
         setQuizFeedback("");
         setNoButtonPos({ x: 0, y: 0 });
         setQuizStep(3);
-      }, 850);
+      }, 1500);
     } else if (quizStep === 3) {
       setQuizFeedback("Correct. 100% verified by universal law.");
       quizTimerRef.current = setTimeout(() => {
@@ -269,29 +331,64 @@ export const BirthdayLiveExperience = ({ onComplete, recipientName = "Stacy" }) 
         setQuizStep(1);
         setCurrentStage(5);
         triggerConfettiCannons();
-      }, 950);
+      }, 1500);
     }
   };
 
-  // Toggle independent card flip
-  const toggleCardFlip = (cardId) => {
-    playPop();
-    setFlippedCards(prev => ({
-      ...prev,
-      [cardId]: !prev[cardId]
-    }));
+  // --- Voice Note Audio Player Handler ---
+  const handleToggleVoiceNote = () => {
+    if (!voiceNoteAudioRef.current) {
+      voiceNoteAudioRef.current = new Audio('/assets/Voice notes/Vaazhanum Baththa-Downringtone.com.mp3');
+      voiceNoteAudioRef.current.onended = () => {
+        setIsPlayingAudio(false);
+      };
+    }
+
+    if (isPlayingAudio) {
+      voiceNoteAudioRef.current.pause();
+      setIsPlayingAudio(false);
+    } else {
+      playSparkle();
+      voiceNoteAudioRef.current.play().then(() => {
+        setIsPlayingAudio(true);
+      }).catch((err) => {
+        console.warn('Audio play notice:', err);
+        setIsPlayingAudio(true);
+      });
+    }
   };
 
-  // Password Verification Logic (Case insensitive & wide range substring matching)
-  const handlePasswordSubmit = (e) => {
-    if (e) e.preventDefault();
-    const cleanInput = passwordInput.toLowerCase().trim();
+  // --- Keypad Passcode Verification Handlers ---
+  const handleKeypadPress = (digit) => {
+    if (passcodeVerified) return;
+    playPop();
+    if (passcode.length < 4) {
+      const nextCode = passcode + digit;
+      setPasscode(nextCode);
+      setPasscodeFeedback("");
+      if (nextCode.length === 4) {
+        validatePasscode(nextCode);
+      }
+    }
+  };
 
-    // Accepted memory keywords anywhere in the input (e.g. 'sai', 'isai', 'bestie', 'partner', 'coffee', 'stacy')
-    const acceptedKeywords = ['sai', 'isai', 'bestie', 'partner', 'coffee', 'love', 'stacy', 'legend', 'forever', 'happy'];
-    const isMatch = acceptedKeywords.some(kw => cleanInput.includes(kw)) || cleanInput.length >= 2;
+  const handleKeypadBackspace = () => {
+    if (passcodeVerified) return;
+    playPop();
+    setPasscode((prev) => prev.slice(0, -1));
+    setPasscodeFeedback("");
+  };
 
-    if (isMatch && cleanInput.length > 0) {
+  const handleKeypadClear = () => {
+    if (passcodeVerified) return;
+    playPop();
+    setPasscode("");
+    setPasscodeFeedback("");
+  };
+
+  const validatePasscode = (code) => {
+    if (code.length === 4) {
+      setPasscodeVerified(true);
       playFanfare();
       try {
         confetti({
@@ -300,15 +397,17 @@ export const BirthdayLiveExperience = ({ onComplete, recipientName = "Stacy" }) 
           origin: { y: 0.5 },
           colors: ['#8D0B0B', '#FFD9C2', '#FFF1E8']
         });
-      } catch (err) {}
-      setPasswordFeedback("Password Verified! Unsealing letter...");
+      } catch (err) { }
+      setPasscodeFeedback("Passcode Verified! Unsealing confidential note...");
       setTimeout(() => {
         setPasswordModalOpen(false);
         setLetterUnsealed(true);
-      }, 800);
+        setPasscodeVerified(false);
+        setPasscode("");
+      }, 850);
     } else {
       playPop();
-      setPasswordFeedback("You are near! Yes yes, think about our favorite memories... you're so close!");
+      setPasscodeFeedback("Enter 4-digit date & month (DDMM)...");
     }
   };
 
@@ -586,7 +685,7 @@ export const BirthdayLiveExperience = ({ onComplete, recipientName = "Stacy" }) 
               }}>
                 {/* 3 Misbehaving Candles (Clean, No Text Labels) */}
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: '48px', minHeight: '140px', marginBottom: '16px' }}>
-                  
+
                   {/* Candle 1 (Goes out cleanly with NO blinking) */}
                   <div onClick={!candle1Out ? handleCandle1 : undefined} style={{ textAlign: 'center', cursor: candle1Out ? 'default' : 'pointer' }}>
                     <div style={{ minHeight: '32px', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
@@ -799,256 +898,466 @@ export const BirthdayLiveExperience = ({ onComplete, recipientName = "Stacy" }) 
           animate={{ scale: 1, opacity: 1 }}
           style={{ width: '100%', maxWidth: '860px', textAlign: 'center', zIndex: 10, position: 'relative' }}
         >
-          {/* RAINING HEARTS PARTICLES (ACTIVATES WHEN ALL 3 CARDS ARE FLIPPED) */}
-          {allCardsFlipped && !letterUnsealed && (
-            <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 50, overflow: 'hidden' }}>
-              {[...Array(24)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ y: -50, x: `${(i * 4.2) % 100}vw`, opacity: 0.8, scale: 0.6 + (i % 5) * 0.2 }}
-                  animate={{
-                    y: '110vh',
-                    x: `${((i * 4.2) + ((i % 2 === 0 ? 1 : -1) * 8)) % 100}vw`,
-                    rotate: [0, 45, -45, 0]
-                  }}
-                  transition={{
-                    repeat: Infinity,
-                    duration: 3.5 + (i % 4) * 0.8,
-                    delay: (i * 0.15),
-                    ease: 'linear'
-                  }}
-                  style={{ position: 'absolute', top: 0, color: i % 2 === 0 ? 'var(--color-peach-primary)' : '#FF8585' }}
-                >
-                  <Heart size={20 + (i % 4) * 6} fill="currentColor" />
-                </motion.div>
-              ))}
-            </div>
-          )}
-
-          {/* Celebration Header */}
-          <div style={{ marginBottom: '24px' }}>
-            <span style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--color-peach-primary)' }}>
-              ✦ Happy Birthday Capsule ✦
-            </span>
-            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(2.4rem, 6vw, 3.8rem)', color: 'var(--color-peach-primary)', fontStyle: 'italic', margin: '6px 0' }}>
-              Happy Birthday, {recipientName}!
-            </h2>
-            <p style={{ fontFamily: 'var(--font-handwriting)', fontSize: '1.65rem', color: 'var(--color-ivory)' }}>
-              "Here's to another year of pure chaos, endless laughs, and being iconic."
-            </p>
-          </div>
-
-          {/* Voice Note Simulation Card */}
-          <div style={{
-            backgroundColor: 'var(--color-burgundy-primary)',
-            borderRadius: '20px',
-            padding: '18px 24px',
-            border: '1.5px solid var(--color-peach-primary)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '16px',
-            marginBottom: '24px',
-            boxShadow: 'var(--shadow-md)'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-              <button
-                onClick={() => { playSparkle(); setIsPlayingAudio(!isPlayingAudio); }}
-                style={{
-                  width: '48px',
-                  height: '48px',
-                  borderRadius: '50%',
-                  backgroundColor: 'var(--color-peach-primary)',
-                  color: 'var(--color-burgundy-dark)',
-                  border: 'none',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer'
-                }}
-              >
-                {isPlayingAudio ? <Pause size={20} /> : <Play size={20} style={{ marginLeft: '2px' }} />}
-              </button>
-              <div style={{ textAlign: 'left' }}>
-                <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--color-ivory)' }}>
-                  Birthday Voice Note.mp3
-                </div>
-                <div style={{ fontSize: '0.78rem', color: 'var(--color-peach-soft)' }}>
-                  {isPlayingAudio ? "Playing secret birthday message... 0:42" : "Tap to play secret voice note"}
-                </div>
+          {showPhotoMuseum ? (
+            /* ========================================================
+                THE PHOTO MUSEUM SUB-PAGE (WITH FALLING HEARTS)
+               ======================================================== */
+            <motion.div
+              key="photoMuseum"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              style={{ width: '100%' }}
+            >
+              {/* RAINING HEARTS PARTICLES IN PHOTO MUSEUM */}
+              <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 50, overflow: 'hidden' }}>
+                {[...Array(24)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ y: -50, x: `${(i * 4.2) % 100}vw`, opacity: 0.85, scale: 0.6 + (i % 5) * 0.2 }}
+                    animate={{
+                      y: '110vh',
+                      x: `${((i * 4.2) + ((i % 2 === 0 ? 1 : -1) * 8)) % 100}vw`,
+                      rotate: [0, 45, -45, 0]
+                    }}
+                    transition={{
+                      repeat: Infinity,
+                      duration: 3.5 + (i % 4) * 0.8,
+                      delay: (i * 0.15),
+                      ease: 'linear'
+                    }}
+                    style={{ position: 'absolute', top: 0, color: i % 2 === 0 ? 'var(--color-peach-primary)' : '#FF8585' }}
+                  >
+                    <Heart size={20 + (i % 4) * 6} fill="currentColor" />
+                  </motion.div>
+                ))}
               </div>
-            </div>
 
-            {/* Live Audio Equalizer Waveform */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-              {[18, 32, 24, 42, 16, 30, 36, 22].map((h, i) => (
-                <motion.div
-                  key={i}
-                  animate={isPlayingAudio ? { height: [h * 0.35, h, h * 0.35] } : { height: '8px' }}
-                  transition={{ repeat: Infinity, duration: 0.6 + (i % 3) * 0.2 }}
-                  style={{ width: '4px', backgroundColor: 'var(--color-peach-primary)', borderRadius: '2px' }}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* INSTRUCTION SUBTITLE FOR POLAROIDS */}
-          <p style={{ fontSize: '0.9rem', color: 'var(--color-peach-soft)', marginBottom: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-            <Sparkles size={16} color="var(--color-peach-primary)" />
-            <strong>Flip all 3 polaroids to unlock the grand secret:</strong>
-          </p>
-
-          {/* TRUE 3D INDEPENDENT POLAROID FLIP CARDS */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginBottom: '28px', perspective: '1000px' }}>
-            {[
-              { id: 'card1', img: '/assets/cat/birthdaycatwithflowers.png', caption: 'Partner In Crime', secret: 'You still owe me coffee from last month!' },
-              { id: 'card2', img: '/assets/flowers/bouquet.png', caption: 'Virtual Bouquet Delivery', secret: 'Guaranteed to stay fresh forever.' },
-              { id: 'card3', img: '/assets/stickers/cutestwithbouquet.png', caption: 'Certified Legend', secret: 'Most likely to make any room 10x brighter.' }
-            ].map((card) => {
-              const isFlipped = !!flippedCards[card.id];
-              return (
-                <div
-                  key={card.id}
-                  onClick={() => toggleCardFlip(card.id)}
+              {/* Top Back Button */}
+              <div style={{ textAlign: 'left', marginBottom: '20px' }}>
+                <motion.button
+                  onClick={() => { playPop(); setShowPhotoMuseum(false); }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   style={{
-                    height: '270px',
-                    perspective: '1000px',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '10px 20px',
+                    borderRadius: 'var(--radius-pill)',
+                    backgroundColor: 'rgba(255, 217, 194, 0.15)',
+                    border: '1px solid rgba(255, 217, 194, 0.3)',
+                    color: 'var(--color-peach-primary)',
+                    fontFamily: 'var(--font-display)',
+                    fontWeight: 700,
+                    fontSize: '0.9rem',
                     cursor: 'pointer'
                   }}
                 >
-                  <motion.div
-                    animate={{ rotateY: isFlipped ? 180 : 0 }}
-                    transition={{ duration: 0.6, type: 'spring', stiffness: 260, damping: 20 }}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      position: 'relative',
-                      transformStyle: 'preserve-3d',
-                      borderRadius: '16px'
-                    }}
-                  >
-                    {/* Front Face (Cream Polaroid Frame + Clean Transparent Sticker) */}
-                    <div style={{
-                      position: 'absolute',
-                      inset: 0,
-                      backfaceVisibility: 'hidden',
-                      backgroundColor: '#FFF4EB',
-                      color: 'var(--color-burgundy-dark)',
-                      padding: '16px 14px 20px',
-                      borderRadius: '16px',
-                      boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      border: '1px solid rgba(141, 11, 11, 0.15)'
-                    }}>
-                      <div style={{
-                        width: '100%',
-                        height: '155px',
+                  <ArrowLeft size={18} /> Back to Birthday Capsule
+                </motion.button>
+              </div>
+
+              {/* Museum Header */}
+              <div style={{ textAlign: 'center', marginBottom: '28px' }}>
+                <div style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '6px 16px',
+                  borderRadius: 'var(--radius-pill)',
+                  backgroundColor: 'rgba(255, 217, 194, 0.12)',
+                  border: '1px solid rgba(255, 217, 194, 0.25)',
+                  color: 'var(--color-peach-primary)',
+                  fontSize: '0.82rem',
+                  fontWeight: 800,
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  marginBottom: '10px'
+                }}>
+                  <Sparkles size={14} /> ✦ THE SACRED PHOTO MUSEUM ✦
+                </div>
+                <h3 style={{
+                  fontFamily: 'var(--font-serif)',
+                  fontSize: 'clamp(1.6rem, 4vw, 2.3rem)',
+                  color: 'var(--color-peach-primary)',
+                  fontStyle: 'italic',
+                  margin: '4px 0 8px'
+                }}>
+                  "A Living Archive of Our Favorite Stolen Moments"
+                </h3>
+                <p style={{ fontSize: '0.9rem', color: 'var(--color-peach-soft)', maxWidth: '580px', margin: '0 auto' }}>
+                  Hover over each portrait to relive our favorite memories. Tap any frame to leave a heart.
+                </p>
+              </div>
+
+              {/* Staggered Museum Polaroids Grid */}
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))',
+                gap: '26px',
+                padding: '10px 0'
+              }}>
+                {coupleMuseumPhotos.map((photo, idx) => {
+                  const isLoved = !!lovedPhotos[photo.id];
+                  return (
+                    <motion.div
+                      key={photo.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: idx * 0.1 }}
+                      whileHover={{
+                        scale: 1.05,
+                        rotate: 0,
+                        zIndex: 20,
+                        boxShadow: '0 20px 45px rgba(255, 217, 194, 0.35)'
+                      }}
+                      onClick={() => {
+                        playSparkle();
+                        setLovedPhotos((prev) => ({ ...prev, [photo.id]: !prev[photo.id] }));
+                        try {
+                          confetti({
+                            particleCount: 25,
+                            spread: 45,
+                            origin: { y: 0.7 },
+                            colors: ['#FFD9C2', '#8D0B0B']
+                          });
+                        } catch (e) { }
+                      }}
+                      style={{
+                        backgroundColor: '#FFF4EB',
+                        color: 'var(--color-burgundy-dark)',
+                        borderRadius: '18px',
+                        padding: '16px 14px 20px',
+                        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.45)',
+                        border: '1.5px solid rgba(141, 11, 11, 0.15)',
+                        transform: `rotate(${photo.rotation}deg)`,
+                        transition: 'all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                        cursor: 'pointer',
+                        position: 'relative',
                         display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        backgroundColor: 'transparent'
+                        flexDirection: 'column',
+                        justifyContent: 'space-between'
+                      }}
+                    >
+                      {/* Top Washi Tape Accent */}
+                      <div style={{
+                        position: 'absolute',
+                        top: '-8px',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        width: '42px',
+                        height: '14px',
+                        backgroundColor: 'rgba(255, 217, 194, 0.75)',
+                        borderRadius: '2px',
+                        border: '1px solid rgba(141, 11, 11, 0.2)',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+                        zIndex: 5
+                      }} />
+
+                      {/* Cute Asset Sticker Badge */}
+                      <div style={{
+                        position: 'absolute',
+                        top: '-14px',
+                        right: '-10px',
+                        width: '42px',
+                        height: '42px',
+                        pointerEvents: 'none',
+                        zIndex: 6
                       }}>
                         <img
-                          src={card.img}
-                          alt={card.caption}
-                          style={{
-                            maxHeight: '140px',
-                            maxWidth: '100%',
-                            objectFit: 'contain',
-                            filter: 'drop-shadow(0 6px 16px rgba(0,0,0,0.25))'
-                          }}
+                          src={photo.sticker}
+                          alt="Cute Sticker"
+                          style={{ width: '100%', height: '100%', objectFit: 'contain', filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))' }}
                         />
                       </div>
-                      <div style={{ textAlign: 'center', width: '100%' }}>
-                        <div style={{ fontFamily: 'var(--font-handwriting)', fontSize: '1.35rem', fontWeight: 700 }}>
-                          {card.caption}
+
+                      {/* Picture Frame */}
+                      <div style={{
+                        width: '100%',
+                        height: '210px',
+                        borderRadius: '12px',
+                        overflow: 'hidden',
+                        backgroundColor: '#1E0202',
+                        position: 'relative',
+                        marginBottom: '14px'
+                      }}>
+                        <motion.img
+                          src={photo.img}
+                          alt={photo.title}
+                          whileHover={{ scale: 1.08 }}
+                          transition={{ duration: 0.4 }}
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover'
+                          }}
+                        />
+                        {/* Chapter Badge */}
+                        <span style={{
+                          position: 'absolute',
+                          bottom: '8px',
+                          left: '8px',
+                          backgroundColor: 'rgba(18, 1, 1, 0.75)',
+                          color: 'var(--color-peach-primary)',
+                          padding: '3px 8px',
+                          borderRadius: '6px',
+                          fontSize: '0.68rem',
+                          fontWeight: 800,
+                          letterSpacing: '0.05em'
+                        }}>
+                          {photo.dateStamp}
+                        </span>
+
+                        {/* Loved Heart Badge */}
+                        {isLoved && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            style={{
+                              position: 'absolute',
+                              top: '8px',
+                              left: '8px',
+                              backgroundColor: '#8D0B0B',
+                              color: '#FFF4EB',
+                              borderRadius: '50%',
+                              width: '28px',
+                              height: '28px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              boxShadow: '0 2px 8px rgba(0,0,0,0.4)'
+                            }}
+                          >
+                            <Heart size={14} fill="#FFF4EB" color="#FFF4EB" />
+                          </motion.div>
+                        )}
+                      </div>
+
+                      {/* Polaroid Caption & Details */}
+                      <div style={{ textAlign: 'left', padding: '0 4px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                          <div style={{
+                            fontFamily: 'var(--font-handwriting)',
+                            fontSize: '1.45rem',
+                            fontWeight: 700,
+                            color: '#8D0B0B'
+                          }}>
+                            {photo.title}
+                          </div>
+                          <span style={{ color: isLoved ? '#8D0B0B' : '#baa', display: 'flex', alignItems: 'center' }}>
+                            <Heart size={18} fill={isLoved ? '#8D0B0B' : 'none'} />
+                          </span>
                         </div>
-                        <span style={{ fontSize: '0.72rem', color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                          (Tap to flip)
+                        <p style={{
+                          fontSize: '0.82rem',
+                          color: '#4A0E0E',
+                          lineHeight: 1.45,
+                          margin: '0 0 6px',
+                          fontStyle: 'italic'
+                        }}>
+                          "{photo.caption}"
+                        </p>
+                        <span style={{ fontSize: '0.68rem', color: '#999', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                          (Tap frame to heart)
                         </span>
                       </div>
-                    </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
 
-                    {/* Back Face (Secret Handwritten Inside Joke) */}
-                    <div style={{
-                      position: 'absolute',
-                      inset: 0,
-                      backfaceVisibility: 'hidden',
-                      transform: 'rotateY(180deg)',
-                      backgroundColor: 'var(--color-burgundy-primary)',
-                      border: '2px solid var(--color-peach-primary)',
-                      color: 'var(--color-ivory)',
-                      padding: '24px 18px',
-                      borderRadius: '16px',
-                      boxShadow: '0 10px 25px rgba(0,0,0,0.4)',
+              {/* Bottom Back Button */}
+              <div style={{ marginTop: '36px', textAlign: 'center' }}>
+                <motion.button
+                  onClick={() => { playPop(); setShowPhotoMuseum(false); }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '12px 28px',
+                    borderRadius: 'var(--radius-pill)',
+                    backgroundColor: 'var(--color-peach-primary)',
+                    color: 'var(--color-burgundy-dark)',
+                    fontFamily: 'var(--font-display)',
+                    fontWeight: 800,
+                    fontSize: '0.95rem',
+                    cursor: 'pointer',
+                    boxShadow: 'var(--shadow-glow)'
+                  }}
+                >
+                  <ArrowLeft size={18} /> Back to Birthday Capsule
+                </motion.button>
+              </div>
+            </motion.div>
+          ) : (
+            /* ========================================================
+                MAIN BIRTHDAY CAPSULE (VOICE NOTE, MOMENTS BUTTON, STAR UNLOCK)
+               ======================================================== */
+            <motion.div
+              key="mainCapsule"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              style={{ width: '100%' }}
+            >
+              {/* Celebration Header */}
+              <div style={{ marginBottom: '24px' }}>
+                <span style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--color-peach-primary)' }}>
+                  ✦ Happy Birthday Capsule ✦
+                </span>
+                <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(2.4rem, 6vw, 3.8rem)', color: 'var(--color-peach-primary)', fontStyle: 'italic', margin: '6px 0' }}>
+                  Happy Birthday, {recipientName}!
+                </h2>
+                <p style={{ fontFamily: 'var(--font-handwriting)', fontSize: '1.65rem', color: 'var(--color-ivory)' }}>
+                  "Here's to another year of pure chaos, endless laughs, and being iconic."
+                </p>
+              </div>
+
+              {/* Voice Note Player (Plays Vaazhanum Baththa-Downringtone.com.mp3) */}
+              <div style={{
+                backgroundColor: 'var(--color-burgundy-primary)',
+                borderRadius: '20px',
+                padding: '18px 24px',
+                border: '1.5px solid var(--color-peach-primary)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '16px',
+                marginBottom: '26px',
+                boxShadow: 'var(--shadow-md)'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                  <button
+                    type="button"
+                    onClick={handleToggleVoiceNote}
+                    style={{
+                      width: '48px',
+                      height: '48px',
+                      borderRadius: '50%',
+                      backgroundColor: 'var(--color-peach-primary)',
+                      color: 'var(--color-burgundy-dark)',
+                      border: 'none',
                       display: 'flex',
-                      flexDirection: 'column',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      textAlign: 'center'
-                    }}>
-                      <Sparkles size={24} color="var(--color-peach-primary)" style={{ marginBottom: '12px' }} />
-                      <p style={{ fontFamily: 'var(--font-handwriting)', fontSize: '1.5rem', color: 'var(--color-peach-primary)', lineHeight: 1.4 }}>
-                        "{card.secret}"
-                      </p>
-                      <span style={{ fontSize: '0.72rem', color: 'var(--color-peach-soft)', marginTop: '12px' }}>
-                        (Tap to flip back)
-                      </span>
+                      cursor: 'pointer',
+                      boxShadow: isPlayingAudio ? '0 0 20px rgba(255, 217, 194, 0.6)' : 'none',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    {isPlayingAudio ? <Pause size={20} /> : <Play size={20} style={{ marginLeft: '2px' }} />}
+                  </button>
+                  <div style={{ textAlign: 'left' }}>
+                    <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--color-ivory)' }}>
+                      ♡ a little piece of my heart.mp3
                     </div>
-                  </motion.div>
+                    <div style={{ fontSize: '0.78rem', color: 'var(--color-peach-soft)' }}>
+                      {isPlayingAudio ? "Playing secret birthday voice note..." : "Tap to play secret voice note"}
+                    </div>
+                  </div>
                 </div>
-              );
-            })}
-          </div>
 
-          {/* ========================================================
-              GIANT FLOATING HEART COMPONENT (TRIGGERED AFTER 3 FLIPS)
-             ======================================================== */}
-          {allCardsFlipped && !letterUnsealed && (
-            <motion.div
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 18 }}
-              style={{
-                margin: '20px auto 30px',
-                textAlign: 'center',
-                zIndex: 60
-              }}
-            >
-              <motion.div
-                onClick={() => { playSparkle(); setPasswordModalOpen(true); }}
-                whileHover={{ scale: 1.15 }}
-                whileTap={{ scale: 0.95 }}
-                animate={{ scale: [1, 1.08, 1] }}
-                transition={{ repeat: Infinity, duration: 1.4, ease: 'easeInOut' }}
-                style={{
-                  width: '90px',
-                  height: '90px',
-                  borderRadius: '50%',
-                  backgroundColor: 'var(--color-burgundy-primary)',
-                  border: '3px solid var(--color-peach-primary)',
-                  boxShadow: '0 0 35px rgba(255, 217, 194, 0.7), 0 0 70px rgba(141, 11, 11, 0.8)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: '0 auto 12px',
-                  cursor: 'pointer'
-                }}
-              >
-                <Heart size={48} fill="var(--color-peach-primary)" color="var(--color-peach-primary)" />
-              </motion.div>
+                {/* Live Audio Equalizer Waveform */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  {[18, 32, 24, 42, 16, 30, 36, 22].map((h, i) => (
+                    <motion.div
+                      key={i}
+                      animate={isPlayingAudio ? { height: [h * 0.35, h, h * 0.35] } : { height: '8px' }}
+                      transition={{ repeat: Infinity, duration: 0.6 + (i % 3) * 0.2 }}
+                      style={{ width: '4px', backgroundColor: 'var(--color-peach-primary)', borderRadius: '2px' }}
+                    />
+                  ))}
+                </div>
+              </div>
 
-              <h4 style={{ fontFamily: 'var(--font-display)', fontSize: '1.2rem', color: 'var(--color-peach-primary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                ✦ Tap The Heart To Unseal Your Secret Letter ✦
-              </h4>
+              {/* View Our Moments Button */}
+              <div style={{ marginBottom: '32px' }}>
+                <motion.button
+                  onClick={() => {
+                    playSparkle();
+                    setShowPhotoMuseum(true);
+                  }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.96 }}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    padding: '14px 32px',
+                    borderRadius: 'var(--radius-pill)',
+                    backgroundColor: 'var(--color-burgundy-primary)',
+                    border: '2px solid var(--color-peach-primary)',
+                    color: 'var(--color-peach-primary)',
+                    boxShadow: '0 0 25px rgba(255, 217, 194, 0.35)',
+                    fontFamily: 'var(--font-display)',
+                    fontWeight: 800,
+                    fontSize: '1rem',
+                    cursor: 'pointer',
+                    letterSpacing: '0.04em'
+                  }}
+                >
+                  <Sparkles size={18} />
+                  <span>View Our Moments 📸 →</span>
+                </motion.button>
+              </div>
+
+              {/* Glowing Star Passcode Button to Unseal Secret Letter */}
+              {!letterUnsealed && (
+                <motion.div
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.5 }}
+                  style={{
+                    margin: '12px auto 32px',
+                    textAlign: 'center',
+                    zIndex: 30
+                  }}
+                >
+                  <motion.div
+                    onClick={() => { playSparkle(); setPasswordModalOpen(true); }}
+                    whileHover={{ scale: 1.12 }}
+                    whileTap={{ scale: 0.95 }}
+                    animate={{ scale: [1, 1.08, 1], rotate: [0, 4, -4, 0] }}
+                    transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
+                    style={{
+                      width: '90px',
+                      height: '90px',
+                      borderRadius: '50%',
+                      backgroundColor: 'var(--color-burgundy-primary)',
+                      border: '3px solid var(--color-peach-primary)',
+                      boxShadow: '0 0 35px rgba(255, 217, 194, 0.7), 0 0 70px rgba(141, 11, 11, 0.8)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      margin: '0 auto 14px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <Star size={46} fill="var(--color-peach-primary)" color="var(--color-peach-primary)" />
+                  </motion.div>
+
+                  <h4 style={{
+                    fontFamily: 'var(--font-display)',
+                    fontSize: '1.2rem',
+                    color: 'var(--color-peach-primary)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em'
+                  }}>
+                    ✦ Tap The Star To Enter Passcode & Unseal Secret Letter ✦
+                  </h4>
+                  <p style={{ fontSize: '0.82rem', color: 'var(--color-peach-soft)', marginTop: '4px' }}>
+                    Protected by your secret 4-digit code
+                  </p>
+                </motion.div>
+              )}
             </motion.div>
           )}
 
           {/* ========================================================
-              PASSWORD / MEMORY QUESTION PROMPT MODAL
+              PASSCODE KEYPAD MODAL (DATE & MONTH DDMM PASSCODE)
              ======================================================== */}
           <AnimatePresence>
             {passwordModalOpen && (
@@ -1060,8 +1369,8 @@ export const BirthdayLiveExperience = ({ onComplete, recipientName = "Stacy" }) 
                   position: 'fixed',
                   inset: 0,
                   zIndex: 999999,
-                  backgroundColor: 'rgba(15, 1, 1, 0.85)',
-                  backdropFilter: 'blur(12px)',
+                  backgroundColor: 'rgba(15, 1, 1, 0.88)',
+                  backdropFilter: 'blur(14px)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -1070,16 +1379,16 @@ export const BirthdayLiveExperience = ({ onComplete, recipientName = "Stacy" }) 
                 onClick={() => setPasswordModalOpen(false)}
               >
                 <motion.div
-                  initial={{ scale: 0.88, y: 20 }}
+                  initial={{ scale: 0.9, y: 20 }}
                   animate={{ scale: 1, y: 0 }}
-                  exit={{ scale: 0.88, y: 20 }}
+                  exit={{ scale: 0.9, y: 20 }}
                   onClick={(e) => e.stopPropagation()}
                   style={{
                     backgroundColor: 'var(--color-burgundy-dark)',
                     border: '2px solid var(--color-peach-primary)',
-                    borderRadius: '24px',
-                    padding: '36px 28px',
-                    maxWidth: '520px',
+                    borderRadius: '26px',
+                    padding: '32px 24px',
+                    maxWidth: '380px',
                     width: '100%',
                     textAlign: 'center',
                     boxShadow: 'var(--shadow-glow)',
@@ -1088,6 +1397,7 @@ export const BirthdayLiveExperience = ({ onComplete, recipientName = "Stacy" }) 
                   }}
                 >
                   <button
+                    type="button"
                     onClick={() => setPasswordModalOpen(false)}
                     style={{
                       position: 'absolute',
@@ -1102,62 +1412,155 @@ export const BirthdayLiveExperience = ({ onComplete, recipientName = "Stacy" }) 
                     <X size={20} />
                   </button>
 
-                  <div style={{ width: '56px', height: '56px', borderRadius: '50%', backgroundColor: 'var(--color-burgundy-primary)', border: '1.5px solid var(--color-peach-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-                    <KeyRound size={26} color="var(--color-peach-primary)" />
+                  <div style={{ width: '52px', height: '52px', borderRadius: '50%', backgroundColor: 'var(--color-burgundy-primary)', border: '1.5px solid var(--color-peach-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+                    <KeyRound size={24} color="var(--color-peach-primary)" />
                   </div>
 
-                  <span style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--color-peach-primary)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                    Confidential Letter Security Check
+                  <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--color-peach-primary)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                    Confidential Passcode Protocol
                   </span>
 
-                  <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', color: 'var(--color-peach-primary)', fontStyle: 'italic', margin: '10px 0 6px' }}>
-                    "What is our secret inside-joke nickname or memory?"
+                  <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', color: 'var(--color-peach-primary)', fontStyle: 'italic', margin: '8px 0 4px' }}>
+                    "Enter Birthday Passcode"
                   </h3>
 
-                  <p style={{ fontSize: '0.82rem', color: 'var(--color-peach-soft)', marginBottom: '20px' }}>
-                    (Hint: Try 'sai', 'bestie', 'partner', 'coffee', or any word that connects us)
+                  <p style={{ fontSize: '0.8rem', color: 'var(--color-peach-soft)', marginBottom: '14px' }}>
+                    (Hint: Date & month of your birthday — e.g. DDMM)
                   </p>
 
-                  <form onSubmit={handlePasswordSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                    <input
-                      type="text"
-                      value={passwordInput}
-                      onChange={(e) => setPasswordInput(e.target.value)}
-                      placeholder="Enter memory keyword..."
-                      autoFocus
-                      style={{
-                        padding: '14px 20px',
-                        borderRadius: 'var(--radius-pill)',
-                        border: '2px solid var(--color-peach-primary)',
-                        backgroundColor: 'rgba(0, 0, 0, 0.4)',
-                        color: 'var(--color-ivory)',
-                        fontFamily: 'var(--font-display)',
-                        fontSize: '1rem',
-                        fontWeight: 600,
-                        outline: 'none',
-                        textAlign: 'center'
-                      }}
-                    />
+                  {/* 4 PIN Slots */}
+                  <div style={{ display: 'flex', justifyContent: 'center', gap: '14px', margin: '12px 0 16px' }}>
+                    {[0, 1, 2, 3].map((index) => {
+                      const isFilled = passcode.length > index;
+                      return (
+                        <motion.div
+                          key={index}
+                          animate={isFilled ? { scale: [1, 1.2, 1] } : { scale: 1 }}
+                          transition={{ duration: 0.2 }}
+                          style={{
+                            width: '46px',
+                            height: '52px',
+                            borderRadius: '12px',
+                            border: isFilled ? '2px solid var(--color-peach-primary)' : '2px dashed rgba(255, 217, 194, 0.3)',
+                            backgroundColor: isFilled ? 'rgba(255, 217, 194, 0.2)' : 'rgba(0, 0, 0, 0.3)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '1.4rem',
+                            fontWeight: 800,
+                            color: 'var(--color-peach-primary)',
+                            boxShadow: isFilled ? '0 0 18px rgba(255, 217, 194, 0.4)' : 'none'
+                          }}
+                        >
+                          {isFilled ? passcode[index] : ''}
+                        </motion.div>
+                      );
+                    })}
+                  </div>
 
-                    {passwordFeedback && (
-                      <motion.p
-                        initial={{ opacity: 0, y: -6 }}
-                        animate={{ opacity: 1, y: 0 }}
+                  {passcodeFeedback && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      style={{
+                        fontFamily: 'var(--font-handwriting)',
+                        fontSize: '1.25rem',
+                        color: passcodeFeedback.includes('Verified') ? '#4ade80' : 'var(--color-peach-primary)',
+                        margin: '4px 0 12px'
+                      }}
+                    >
+                      {passcodeFeedback}
+                    </motion.p>
+                  )}
+
+                  {/* 3x4 Tactile Keypad */}
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(3, 1fr)',
+                    gap: '10px',
+                    maxWidth: '280px',
+                    margin: '0 auto 8px'
+                  }}>
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((digit) => (
+                      <motion.button
+                        key={digit}
+                        type="button"
+                        whileHover={{ scale: 1.06 }}
+                        whileTap={{ scale: 0.94 }}
+                        onClick={() => handleKeypadPress(String(digit))}
                         style={{
-                          fontFamily: 'var(--font-handwriting)',
+                          height: '52px',
+                          borderRadius: '14px',
+                          backgroundColor: 'rgba(255, 217, 194, 0.1)',
+                          border: '1px solid rgba(255, 217, 194, 0.25)',
+                          color: 'var(--color-ivory)',
                           fontSize: '1.25rem',
-                          color: passwordFeedback.includes('Verified') ? '#4ade80' : 'var(--color-peach-primary)',
-                          margin: '4px 0'
+                          fontWeight: 700,
+                          fontFamily: 'var(--font-display)',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease'
                         }}
                       >
-                        {passwordFeedback}
-                      </motion.p>
-                    )}
-
-                    <MagneticButton type="submit" variant="primary" size="md">
-                      Unlock Letter
-                    </MagneticButton>
-                  </form>
+                        {digit}
+                      </motion.button>
+                    ))}
+                    <motion.button
+                      type="button"
+                      whileHover={{ scale: 1.06 }}
+                      whileTap={{ scale: 0.94 }}
+                      onClick={handleKeypadClear}
+                      style={{
+                        height: '52px',
+                        borderRadius: '14px',
+                        backgroundColor: 'rgba(0, 0, 0, 0.25)',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        color: 'var(--color-peach-soft)',
+                        fontSize: '0.82rem',
+                        fontWeight: 700,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      CLEAR
+                    </motion.button>
+                    <motion.button
+                      type="button"
+                      whileHover={{ scale: 1.06 }}
+                      whileTap={{ scale: 0.94 }}
+                      onClick={() => handleKeypadPress("0")}
+                      style={{
+                        height: '52px',
+                        borderRadius: '14px',
+                        backgroundColor: 'rgba(255, 217, 194, 0.1)',
+                        border: '1px solid rgba(255, 217, 194, 0.25)',
+                        color: 'var(--color-ivory)',
+                        fontSize: '1.25rem',
+                        fontWeight: 700,
+                        fontFamily: 'var(--font-display)',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      0
+                    </motion.button>
+                    <motion.button
+                      type="button"
+                      whileHover={{ scale: 1.06 }}
+                      whileTap={{ scale: 0.94 }}
+                      onClick={handleKeypadBackspace}
+                      style={{
+                        height: '52px',
+                        borderRadius: '14px',
+                        backgroundColor: 'rgba(0, 0, 0, 0.25)',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        color: 'var(--color-peach-primary)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <Delete size={20} />
+                    </motion.button>
+                  </div>
                 </motion.div>
               </motion.div>
             )}

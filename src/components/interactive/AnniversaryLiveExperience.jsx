@@ -90,14 +90,14 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
   const userInteractionTimeoutRef = useRef(null);
 
   const initialCameraRoll = [
-    { id: 'p1', img: '/assets/cat/birthdaycatwithflowers.png', title: 'Day 1 Partner', note: 'You fell asleep on my shoulder within 10 minutes.', dateStamp: "'22 05 14", frameNum: '01' },
-    { id: 'p2', img: '/assets/flowers/Pink flower.png', title: 'First Surprise Bouquet', note: 'Your smile lit up the entire room.', dateStamp: "'22 08 11", frameNum: '02' },
-    { id: 'p3', img: '/assets/stickers/cutestwithbouquet.png', title: 'Midnight Diner Date', note: 'Warm cherry pie and endless laughter at 2 AM.', dateStamp: "'23 01 22", frameNum: '03' },
-    { id: 'p4', img: '/assets/cat/catwiththreebouquet.png', title: 'Adopting Our Mascot', note: 'The day our little family grew by four paws.', dateStamp: "'23 04 19", frameNum: '04' },
-    { id: 'p5', img: '/assets/flowers/blue-anemone-flower.png', title: 'Coastline Road Trip', note: 'Wind in your hair and singing off-key to indie songs.', dateStamp: "'23 09 08", frameNum: '05' },
-    { id: 'p6', img: '/assets/stickers/cutest.png', title: 'Lazy Sunday Mornings', note: 'Pancakes, black coffee, and comfortable silence.', dateStamp: "'24 02 14", frameNum: '06' },
-    { id: 'p7', img: '/assets/flowers/bouquet.png', title: 'Anniversary Celebration', note: '1,248 days and I still get butterflies every time.', dateStamp: "'24 08 04", frameNum: '07' },
-    { id: 'p8', img: '/assets/cat/birthdaycatwithflowers.png', title: 'Forever & Always', note: 'Every single chapter is better because you are in it.', dateStamp: "'24 10 04", frameNum: '08' }
+    { id: 'p1', img: '/assets/Couple photos/Couples (rose hiding face).jpg', title: 'Day 1 Partner', note: 'You fell asleep on my shoulder within 10 minutes.', dateStamp: "'22 05 14", frameNum: '01' },
+    { id: 'p2', img: '/assets/Couple photos/Flowers in head.jpg', title: 'First Surprise Bouquet', note: 'Your smile lit up the entire room.', dateStamp: "'22 08 11", frameNum: '02' },
+    { id: 'p3', img: '/assets/Couple photos/Head patting cute.jpg', title: 'Midnight Diner Date', note: 'Warm cherry pie and endless laughter at 2 AM.', dateStamp: "'23 01 22", frameNum: '03' },
+    { id: 'p4', img: '/assets/Couple photos/Kicking.jpg', title: 'Adopting Our Mascot', note: 'The day our little family grew by four paws.', dateStamp: "'23 04 19", frameNum: '04' },
+    { id: 'p5', img: '/assets/Couple photos/Piggy ride.jpg', title: 'Coastline Road Trip', note: 'Wind in your hair and singing off-key to indie songs.', dateStamp: "'23 09 08", frameNum: '05' },
+    { id: 'p6', img: '/assets/Couple photos/Couples (rose hiding face).jpg', title: 'Lazy Sunday Mornings', note: 'Pancakes, black coffee, and comfortable silence.', dateStamp: "'24 02 14", frameNum: '06' },
+    { id: 'p7', img: '/assets/Couple photos/Flowers in head.jpg', title: 'Anniversary Celebration', note: '1,248 days and I still get butterflies every time.', dateStamp: "'24 08 04", frameNum: '07' },
+    { id: 'p8', img: '/assets/Couple photos/Piggy ride.jpg', title: 'Forever & Always', note: 'Every single chapter is better because you are in it.', dateStamp: "'24 10 04", frameNum: '08' }
   ];
 
   const allPhotos = [...initialCameraRoll, ...uploadedPhotos];
