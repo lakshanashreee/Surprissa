@@ -74,6 +74,13 @@ body {
   position: relative;
 }
 
+#root {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
 /* Custom Text Selection */
 ::selection {
   background-color: var(--color-peach-primary);

@@ -1,6 +1,5 @@
 import React, { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
 import { useAudio } from './AudioEffects';
 
 export const MagneticButton = ({
@@ -111,17 +110,9 @@ export const MagneticButton = ({
     </motion.div>
   );
 
-  if (to) {
+  if (to || href) {
     return (
-      <Link to={to} onClick={handleClick} style={{ textDecoration: 'none', display: 'inline-block' }}>
-        {content}
-      </Link>
-    );
-  }
-
-  if (href) {
-    return (
-      <a href={href} onClick={handleClick} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'inline-block' }}>
+      <a href={to || href} onClick={handleClick} style={{ textDecoration: 'none', display: 'inline-block' }}>
         {content}
       </a>
     );
