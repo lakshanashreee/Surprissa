@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, Sparkles, Clock, Calendar, Film, Upload, Play, Pause, RotateCcw, ArrowRight, Award, Compass, Music, CheckCircle2, ChevronRight, Bookmark, Image as ImageIcon, Send, Star, MessageCircle, Home, Camera, Eye, Zap, ChevronLeft, Target } from 'lucide-react';
+import { Heart, Sparkles, Clock, Calendar, Film, Play, Pause, RotateCcw, ArrowRight, Award, Compass, Music, CheckCircle2, ChevronRight, Bookmark, Image as ImageIcon, Send, Star, MessageCircle, Home, Camera, Eye, Zap, ChevronLeft, Target, Delete, Lock, X } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useAudio } from '../ui/AudioEffects';
 import { MagneticButton } from '../ui/MagneticButton';
 
-export const AnniversaryLiveExperience = ({ onComplete }) => {
+export const AnniversaryLiveExperience = ({ recipientName = "Stacy", onComplete }) => {
   const { playPop, playSparkle, playSuccess, playFlame, playFanfare } = useAudio();
 
   // Experience Layers:
@@ -33,7 +33,7 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
       tag: "Day 1",
       date: "May 14, 2022",
       title: "The Very First Text",
-      story: "You left me on delivered for 4 hours, but then replied with 12 consecutive voice notes. The rest was history.",
+      story: `You left me on delivered for 4 hours, ${recipientName}, but then replied with 12 consecutive voice notes. The rest was history.`,
       img: "/assets/cat/birthdaycatwithflowers.png",
       badge: "ORIGIN STORY"
     },
@@ -69,7 +69,7 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
       tag: "Day 1,248",
       date: "Today & Forever",
       title: "Still Choosing You Every Single Day",
-      story: "Still my favorite laugh to hear, favorite hoodie thief, and the only person I want in every single future chapter.",
+      story: `Still my favorite laugh to hear, favorite hoodie thief, and the only person I want in every single future chapter, ${recipientName}.`,
       img: "/assets/flowers/bouquet.png",
       badge: "ETERNAL LOVE"
     }
@@ -79,88 +79,68 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
   // LAYER 3: 3D Rotating & Glitch-Free Gliding Camera Roll
   // ==========================================
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
-  const [isAutoDrifting, setIsAutoDrifting] = useState(true);
-  const [isUserInteracting, setIsUserInteracting] = useState(false);
   const [viewfinderPhoto, setViewfinderPhoto] = useState(null);
-  const [uploadedPhotos, setUploadedPhotos] = useState([]);
   const [shutterFlash, setShutterFlash] = useState(false);
   const filmReelContainerRef = useRef(null);
   const scrollPosRef = useRef(0);
-  const fileInputRef = useRef(null);
-  const userInteractionTimeoutRef = useRef(null);
+  const isTappingRef = useRef(false);
 
   const initialCameraRoll = [
-    { id: 'p1', img: '/assets/Couple photos/Couples (rose hiding face).jpg', title: 'Day 1 Partner', note: 'You fell asleep on my shoulder within 10 minutes.', dateStamp: "'22 05 14", frameNum: '01' },
+    { id: 'p1', img: '/assets/Couple photos/Couples (rose hiding face).jpg', title: `Day 1 with ${recipientName}`, note: `You fell asleep on my shoulder within 10 minutes, ${recipientName}.`, dateStamp: "'22 05 14", frameNum: '01' },
     { id: 'p2', img: '/assets/Couple photos/Flowers in head.jpg', title: 'First Surprise Bouquet', note: 'Your smile lit up the entire room.', dateStamp: "'22 08 11", frameNum: '02' },
     { id: 'p3', img: '/assets/Couple photos/Head patting cute.jpg', title: 'Midnight Diner Date', note: 'Warm cherry pie and endless laughter at 2 AM.', dateStamp: "'23 01 22", frameNum: '03' },
     { id: 'p4', img: '/assets/Couple photos/Kicking.jpg', title: 'Adopting Our Mascot', note: 'The day our little family grew by four paws.', dateStamp: "'23 04 19", frameNum: '04' },
     { id: 'p5', img: '/assets/Couple photos/Piggy ride.jpg', title: 'Coastline Road Trip', note: 'Wind in your hair and singing off-key to indie songs.', dateStamp: "'23 09 08", frameNum: '05' },
     { id: 'p6', img: '/assets/Couple photos/Couples (rose hiding face).jpg', title: 'Lazy Sunday Mornings', note: 'Pancakes, black coffee, and comfortable silence.', dateStamp: "'24 02 14", frameNum: '06' },
     { id: 'p7', img: '/assets/Couple photos/Flowers in head.jpg', title: 'Anniversary Celebration', note: '1,248 days and I still get butterflies every time.', dateStamp: "'24 08 04", frameNum: '07' },
-    { id: 'p8', img: '/assets/Couple photos/Piggy ride.jpg', title: 'Forever & Always', note: 'Every single chapter is better because you are in it.', dateStamp: "'24 10 04", frameNum: '08' }
+    { id: 'p8', img: '/assets/Couple photos/Piggy ride.jpg', title: `Forever & Always, ${recipientName}`, note: `Every single chapter is better because you are in it, ${recipientName}.`, dateStamp: "'24 10 04", frameNum: '08' }
   ];
 
-  const allPhotos = [...initialCameraRoll, ...uploadedPhotos];
+  // Infinite duplicate for seamless endless continuous drifting loop
+  const displayPhotos = [...initialCameraRoll, ...initialCameraRoll];
 
-  // Guaranteed smooth continuous auto-drift using subpixel accumulator
+  // Guaranteed smooth continuous auto-drift at steady speed without pausing on hover
   useEffect(() => {
     if (currentLayer !== 3) return;
     let animFrameId;
     let lastTime = performance.now();
+    const speed = 40; // px/sec steady speed
+
+    if (filmReelContainerRef.current) {
+      scrollPosRef.current = filmReelContainerRef.current.scrollLeft;
+    }
 
     const scrollLoop = (currentTime) => {
       const delta = Math.min((currentTime - lastTime) / 1000, 0.1);
       lastTime = currentTime;
 
-      if (isAutoDrifting && !isUserInteracting && filmReelContainerRef.current) {
-        const el = filmReelContainerRef.current;
-        scrollPosRef.current += delta * 45;
-        if (scrollPosRef.current >= el.scrollWidth - el.clientWidth - 5) {
-          scrollPosRef.current = 0;
+      const el = filmReelContainerRef.current;
+      if (el && !isTappingRef.current && !viewfinderPhoto) {
+        scrollPosRef.current += delta * speed;
+
+        const halfWidth = el.scrollWidth / 2;
+        if (halfWidth > 100 && scrollPosRef.current >= halfWidth) {
+          scrollPosRef.current -= halfWidth;
+          el.scrollLeft = scrollPosRef.current;
+        } else {
+          el.scrollLeft = scrollPosRef.current;
         }
-        el.scrollLeft = Math.round(scrollPosRef.current);
       }
+
       animFrameId = requestAnimationFrame(scrollLoop);
     };
 
     animFrameId = requestAnimationFrame(scrollLoop);
     return () => cancelAnimationFrame(animFrameId);
-  }, [currentLayer, isAutoDrifting, isUserInteracting]);
-
-  const handleUserInteractionStart = () => {
-    setIsUserInteracting(true);
-    if (userInteractionTimeoutRef.current) {
-      clearTimeout(userInteractionTimeoutRef.current);
-    }
-  };
-
-  const handleUserInteractionEnd = (delay = 1800) => {
-    if (userInteractionTimeoutRef.current) {
-      clearTimeout(userInteractionTimeoutRef.current);
-    }
-    userInteractionTimeoutRef.current = setTimeout(() => {
-      if (filmReelContainerRef.current) {
-        scrollPosRef.current = filmReelContainerRef.current.scrollLeft;
-      }
-      setIsUserInteracting(false);
-    }, delay);
-  };
-
-  const handleManualScroll = () => {
-    if (filmReelContainerRef.current && isUserInteracting) {
-      scrollPosRef.current = filmReelContainerRef.current.scrollLeft;
-    }
-  };
+  }, [currentLayer, viewfinderPhoto]);
 
   const handleReelNav = (direction) => {
-    handleUserInteractionStart();
     playPop();
     if (filmReelContainerRef.current) {
-      const newPos = filmReelContainerRef.current.scrollLeft + (direction === 'left' ? -260 : 260);
-      filmReelContainerRef.current.scrollTo({ left: newPos, behavior: 'smooth' });
-      scrollPosRef.current = Math.max(0, newPos);
+      const shift = direction === 'left' ? -280 : 280;
+      filmReelContainerRef.current.scrollBy({ left: shift, behavior: 'smooth' });
+      scrollPosRef.current = filmReelContainerRef.current.scrollLeft + shift;
     }
-    handleUserInteractionEnd(2500);
   };
 
   // ==========================================
@@ -242,10 +222,14 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
   };
 
   // ==========================================
-  // LAYER 5: Love Vault & Audio
+  // LAYER 5: Love Vault Passcode & Audio
   // ==========================================
-  const [waxSealBroken, setWaxSealBroken] = useState(false);
   const [isPlayingSong, setIsPlayingSong] = useState(false);
+  const [isPasscodeModalOpen, setIsPasscodeModalOpen] = useState(false);
+  const [passcode, setPasscode] = useState("");
+  const [passcodeFeedback, setPasscodeFeedback] = useState("");
+  const [isShake, setIsShake] = useState(false);
+  const [letterUnlocked, setLetterUnlocked] = useState(false);
 
   // Trigger celebratory confetti cannons
   const triggerConfettiCannons = () => {
@@ -291,12 +275,10 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
 
   // --- LAYER 3 HANDLER: Shutter Click & Viewfinder ---
   const handlePhotoClick = (photo, idx) => {
-    handleUserInteractionStart();
     playPop();
-    setSelectedPhotoIndex(idx);
+    setSelectedPhotoIndex(idx % initialCameraRoll.length);
     setShutterFlash(true);
     setTimeout(() => setShutterFlash(false), 180);
-    handleUserInteractionEnd(2000);
   };
 
   const handleOpenViewfinder = (photo) => {
@@ -304,38 +286,80 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
     setViewfinderPhoto(photo);
   };
 
-  // --- LAYER 3 HANDLER: Photo Upload ---
-  const handlePhotoUpload = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      playSparkle();
-      const reader = new FileReader();
-      reader.onload = (uploadEvent) => {
-        const newPhoto = {
-          id: `up-${Date.now()}`,
-          img: uploadEvent.target.result,
-          title: 'Custom Memory Upload',
-          note: 'A precious captured moment added to our rotating reel.',
-          dateStamp: "'24 TODAY",
-          frameNum: `0${allPhotos.length + 1}`
-        };
-        setUploadedPhotos(prev => [...prev, newPhoto]);
-        setSelectedPhotoIndex(allPhotos.length);
-        playSuccess();
-      };
-      reader.readAsDataURL(file);
+  // --- LAYER 5 HANDLERS: Keypad Passcode Protocol (DD/MM: 24/08) ---
+  const handleKeypadPress = (digit) => {
+    if (letterUnlocked) return;
+    playPop();
+    if (passcode.length < 4) {
+      const nextCode = passcode + digit;
+      setPasscode(nextCode);
+      setPasscodeFeedback("");
+      if (nextCode.length === 4) {
+        validatePasscode(nextCode);
+      }
     }
   };
 
-  // --- LAYER 5 HANDLER: Break Wax Seal ---
-  const handleBreakSeal = () => {
-    if (waxSealBroken) return;
-    playFanfare();
-    try {
-      confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
-    } catch (e) {}
-    setWaxSealBroken(true);
+  const handleKeypadBackspace = () => {
+    if (letterUnlocked) return;
+    playPop();
+    setPasscode(prev => prev.slice(0, -1));
+    setPasscodeFeedback("");
   };
+
+  const handleKeypadClear = () => {
+    if (letterUnlocked) return;
+    playPop();
+    setPasscode("");
+    setPasscodeFeedback("");
+  };
+
+  const validatePasscode = (code) => {
+    // Passcode DD/MM: 24/08 -> "2408"
+    if (code === "2408") {
+      playFanfare();
+      playSuccess();
+      setPasscodeFeedback("Passcode Verified! 💖");
+      try {
+        confetti({ particleCount: 120, spread: 90, origin: { y: 0.6 } });
+      } catch (e) {}
+
+      // Trigger falling hearts animation across screen
+      setIsRainingHearts(true);
+
+      setTimeout(() => {
+        setIsPasscodeModalOpen(false);
+        setLetterUnlocked(true);
+        triggerConfettiCannons();
+      }, 600);
+    } else {
+      playPop();
+      setIsShake(true);
+      setPasscodeFeedback("Incorrect date! Hint: 24/08");
+      setTimeout(() => {
+        setIsShake(false);
+        setPasscode("");
+      }, 1000);
+    }
+  };
+
+  // Physical keyboard support for passcode keypad popup
+  useEffect(() => {
+    if (!isPasscodeModalOpen || letterUnlocked) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key >= '0' && e.key <= '9') {
+        handleKeypadPress(e.key);
+      } else if (e.key === 'Backspace') {
+        handleKeypadBackspace();
+      } else if (e.key === 'Escape') {
+        setIsPasscodeModalOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isPasscodeModalOpen, letterUnlocked, passcode]);
 
   const handleReplay = () => {
     playPop();
@@ -347,8 +371,12 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
     setArrowStatus('idle');
     setDragOffset({ x: 0, y: 0 });
     setIsRainingHearts(false);
-    setWaxSealBroken(false);
     setIsPlayingSong(false);
+    setPasscode("");
+    setPasscodeFeedback("");
+    setIsShake(false);
+    setIsPasscodeModalOpen(false);
+    setLetterUnlocked(false);
   };
 
   return (
@@ -361,9 +389,39 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
       flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
-      padding: 'clamp(16px, 4vw, 40px)',
+      padding: 'clamp(14px, 3vw, 40px) clamp(12px, 2.5vw, 24px)',
       overflowX: 'hidden'
     }}>
+
+      {/* ========================================================
+          SUBTLE SURPRISSA DEMO WATERMARK (CENTER FRAME HALLMARK)
+         ======================================================== */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          pointerEvents: 'none',
+          userSelect: 'none',
+          zIndex: 25,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '8px',
+          fontFamily: 'var(--font-serif)',
+          fontSize: 'clamp(1.4rem, 3.4vw, 2.3rem)',
+          fontStyle: 'italic',
+          letterSpacing: '0.12em',
+          color: 'rgba(255, 217, 194, 0.18)',
+          textTransform: 'lowercase',
+          whiteSpace: 'nowrap',
+          textShadow: '0 0 16px rgba(255, 217, 194, 0.15)'
+        }}
+      >
+        <span>✦ surprissa demo ✦</span>
+      </div>
 
       {/* Shutter Flash Overlay */}
       {shutterFlash && (
@@ -416,20 +474,20 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
         </div>
       )}
 
-      {/* Floating Transparent Flower & Mascot Stickers */}
-      <div style={{ position: 'absolute', top: '15px', left: '15px', width: 'clamp(65px, 10vw, 115px)', pointerEvents: 'none', zIndex: 2, opacity: 0.9 }} className="animate-float">
+      {/* Floating Transparent Flower & Mascot Stickers (Visible on Laptops/Desktops, hidden on Phones to eliminate overlapping) */}
+      <div style={{ top: '15px', left: '15px', width: 'clamp(65px, 10vw, 115px)' }} className="floating-decor-sticker animate-float">
         <img src="/assets/flowers/Pink flower.png" alt="Flower Decor" style={{ width: '100%', height: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.35))' }} />
       </div>
 
-      <div style={{ position: 'absolute', top: '15px', right: '15px', width: 'clamp(70px, 11vw, 125px)', pointerEvents: 'none', zIndex: 2, opacity: 0.9 }} className="animate-float-delayed">
+      <div style={{ top: '15px', right: '15px', width: 'clamp(70px, 11vw, 125px)' }} className="floating-decor-sticker animate-float-delayed">
         <img src="/assets/flowers/blue-anemone-flower.png" alt="Flower Decor" style={{ width: '100%', height: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.35))' }} />
       </div>
 
-      <div style={{ position: 'absolute', bottom: '15px', left: '15px', width: 'clamp(75px, 12vw, 130px)', pointerEvents: 'none', zIndex: 2, opacity: 0.9 }} className="animate-float-delayed">
+      <div style={{ bottom: '15px', left: '15px', width: 'clamp(75px, 12vw, 130px)' }} className="floating-decor-sticker animate-float-delayed">
         <img src="/assets/cat/catwiththreebouquet.png" alt="Cat Mascot" style={{ width: '100%', height: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.35))' }} />
       </div>
 
-      <div style={{ position: 'absolute', bottom: '15px', right: '15px', width: 'clamp(65px, 10vw, 110px)', pointerEvents: 'none', zIndex: 2, opacity: 0.9 }} className="animate-float">
+      <div style={{ bottom: '15px', right: '15px', width: 'clamp(65px, 10vw, 110px)' }} className="floating-decor-sticker animate-float">
         <img src="/assets/stickers/cutestwithbouquet.png" alt="Cute Sticker" style={{ width: '100%', height: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.35))' }} />
       </div>
 
@@ -467,11 +525,11 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
             marginBottom: '10px',
             lineHeight: 1.2
           }}>
-            "1,248 Days of Loving You"
+            {`"1,248 Days of Loving You, ${recipientName}"`}
           </h2>
 
           <p style={{ fontSize: '0.95rem', color: 'var(--color-peach-soft)', marginBottom: '28px', lineHeight: 1.5 }}>
-            A real-time precision countdown of every hour, minute, and heartbeat spent together.
+            {`A real-time precision countdown of every hour, minute, and heartbeat spent together with ${recipientName}.`}
           </p>
 
           {/* Time Metrics Container with Crisp Proportional Sans Numbers & Generous Padding */}
@@ -483,15 +541,10 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
             boxShadow: 'var(--shadow-glow)',
             marginBottom: '26px'
           }}>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(135px, 1fr))',
-              gap: '16px',
-              marginBottom: '28px'
-            }}>
+            <div className="metrics-grid">
               {/* 1. Days */}
               <div style={{
-                padding: '22px 14px',
+                padding: 'clamp(14px, 2.5vw, 22px) clamp(8px, 1.8vw, 14px)',
                 borderRadius: '18px',
                 backgroundColor: 'rgba(0,0,0,0.38)',
                 border: '1px solid rgba(255, 217, 194, 0.28)',
@@ -500,7 +553,7 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
               }}>
                 <div style={{
                   fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif",
-                  fontSize: 'clamp(1.75rem, 3.2vw, 2.3rem)',
+                  fontSize: 'clamp(1.5rem, 3.2vw, 2.3rem)',
                   fontWeight: 800,
                   color: 'var(--color-peach-primary)',
                   letterSpacing: '-0.02em',
@@ -516,7 +569,7 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
 
               {/* 2. Hours */}
               <div style={{
-                padding: '22px 14px',
+                padding: 'clamp(14px, 2.5vw, 22px) clamp(8px, 1.8vw, 14px)',
                 borderRadius: '18px',
                 backgroundColor: 'rgba(0,0,0,0.38)',
                 border: '1px solid rgba(255, 217, 194, 0.28)',
@@ -525,7 +578,7 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
               }}>
                 <div style={{
                   fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif",
-                  fontSize: 'clamp(1.75rem, 3.2vw, 2.3rem)',
+                  fontSize: 'clamp(1.5rem, 3.2vw, 2.3rem)',
                   fontWeight: 800,
                   color: 'var(--color-peach-primary)',
                   letterSpacing: '-0.02em',
@@ -541,7 +594,7 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
 
               {/* 3. Minutes */}
               <div style={{
-                padding: '22px 14px',
+                padding: 'clamp(14px, 2.5vw, 22px) clamp(8px, 1.8vw, 14px)',
                 borderRadius: '18px',
                 backgroundColor: 'rgba(0,0,0,0.38)',
                 border: '1px solid rgba(255, 217, 194, 0.28)',
@@ -550,7 +603,7 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
               }}>
                 <div style={{
                   fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif",
-                  fontSize: 'clamp(1.75rem, 3.2vw, 2.3rem)',
+                  fontSize: 'clamp(1.5rem, 3.2vw, 2.3rem)',
                   fontWeight: 800,
                   color: 'var(--color-peach-primary)',
                   letterSpacing: '-0.02em',
@@ -566,7 +619,7 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
 
               {/* 4. Heartbeats */}
               <div style={{
-                padding: '22px 14px',
+                padding: 'clamp(14px, 2.5vw, 22px) clamp(8px, 1.8vw, 14px)',
                 borderRadius: '18px',
                 backgroundColor: 'rgba(0,0,0,0.38)',
                 border: '1px solid rgba(255, 217, 194, 0.28)',
@@ -575,7 +628,7 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
               }}>
                 <div style={{
                   fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif",
-                  fontSize: 'clamp(1.75rem, 3.2vw, 2.3rem)',
+                  fontSize: 'clamp(1.5rem, 3.2vw, 2.3rem)',
                   fontWeight: 800,
                   color: 'var(--color-peach-primary)',
                   letterSpacing: '-0.02em',
@@ -657,34 +710,19 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
             marginBottom: '8px',
             lineHeight: 1.2
           }}>
-            "Every Step Leading To Us"
+            {`"Every Step Leading To Us, ${recipientName}"`}
           </h2>
           <p style={{ fontSize: '0.95rem', color: 'var(--color-peach-soft)', marginBottom: '36px' }}>
             Follow the central path from our very first hello to today. Tap any memory along the line!
           </p>
 
           {/* CONTINUOUS VERTICAL LINE TIMELINE CONTAINER */}
-          <div style={{
-            position: 'relative',
-            padding: '24px 0 36px',
-            marginBottom: '32px'
-          }}>
-            {/* The Central Glowing Vertical Line */}
-            <div style={{
-              position: 'absolute',
-              top: '10px',
-              bottom: '20px',
-              left: 'clamp(24px, 50%, 50%)',
-              transform: 'translateX(-50%)',
-              width: '4px',
-              background: 'linear-gradient(to bottom, #FFD9C2 0%, rgba(255, 217, 194, 0.8) 50%, #FFD9C2 100%)',
-              boxShadow: '0 0 16px rgba(255, 217, 194, 0.7)',
-              borderRadius: '4px',
-              zIndex: 1
-            }} />
+          <div className="sacred-timeline-container">
+            {/* The Central / Left Glowing Vertical Line */}
+            <div className="sacred-timeline-spine" />
 
             {/* Vertical Milestone Nodes Along the Line */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
               {verticalMilestones.map((item, idx) => {
                 const isEven = idx % 2 === 0;
                 const isSelected = activeTimelineNode === item.id;
@@ -695,70 +733,55 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: idx * 0.12 }}
-                    style={{
-                      position: 'relative',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: isEven ? 'flex-start' : 'flex-end',
-                      width: '100%',
-                      zIndex: 2,
-                      paddingLeft: isEven ? '0' : 'clamp(0px, 4vw, 20px)',
-                      paddingRight: isEven ? 'clamp(0px, 4vw, 20px)' : '0'
-                    }}
+                    className={`sacred-timeline-item ${isEven ? 'even' : 'odd'}`}
                   >
-                    {/* Glowing Node Marker ON the Central Line */}
+                    {/* Glowing Node Marker ON the Line */}
                     <div
                       onClick={() => { playPop(); setActiveTimelineNode(item.id); }}
+                      className="sacred-timeline-node"
                       style={{
-                        position: 'absolute',
-                        left: 'clamp(24px, 50%, 50%)',
-                        top: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        width: isSelected ? '30px' : '22px',
-                        height: isSelected ? '30px' : '22px',
-                        borderRadius: '50%',
+                        width: isSelected ? '28px' : '20px',
+                        height: isSelected ? '28px' : '20px',
                         backgroundColor: isSelected ? '#FFD9C2' : '#8D0B0B',
-                        border: '3px solid #FFD9C2',
-                        boxShadow: isSelected ? '0 0 20px #FFD9C2' : '0 0 10px rgba(255, 217, 194, 0.5)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'pointer',
-                        zIndex: 4,
-                        transition: 'all 0.3s ease'
+                        boxShadow: isSelected ? '0 0 20px #FFD9C2' : '0 0 10px rgba(255, 217, 194, 0.5)'
                       }}
                     >
-                      <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: isSelected ? '#8D0B0B' : '#FFD9C2' }} />
+                      <div style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: isSelected ? '#8D0B0B' : '#FFD9C2' }} />
                     </div>
 
                     {/* Milestone Card */}
                     <motion.div
                       onClick={() => { playPop(); setActiveTimelineNode(item.id); }}
-                      whileHover={{ scale: 1.02 }}
+                      whileHover={{ scale: 1.03 }}
+                      className="sacred-timeline-card"
                       style={{
-                        width: 'clamp(270px, 44%, 350px)',
                         backgroundColor: 'var(--color-burgundy-primary)',
                         border: isSelected ? '2px solid var(--color-peach-primary)' : '1.5px solid rgba(255, 217, 194, 0.4)',
-                        borderRadius: '22px',
-                        padding: '22px 20px',
-                        boxShadow: isSelected ? '0 12px 35px rgba(255, 217, 194, 0.3)' : '0 8px 24px rgba(0,0,0,0.5)',
-                        textAlign: 'left',
+                        borderRadius: '24px',
+                        padding: 'clamp(20px, 3vw, 26px) clamp(18px, 2.5vw, 24px)',
+                        boxShadow: isSelected ? '0 12px 35px rgba(255, 217, 194, 0.35)' : '0 8px 24px rgba(0,0,0,0.5)',
+                        textAlign: 'center',
                         position: 'relative',
                         cursor: 'pointer',
-                        transition: 'all 0.3s ease'
+                        transition: 'all 0.3s ease',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center'
                       }}
                     >
-                      {/* Ribbon Tag Badge */}
+                      {/* Ribbon Tag Badge + Date: Centered */}
                       <div style={{
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'space-between',
-                        marginBottom: '10px'
+                        justifyContent: 'center',
+                        gap: '10px',
+                        marginBottom: '14px',
+                        flexWrap: 'wrap'
                       }}>
                         <span style={{
                           backgroundColor: '#2B0404',
                           color: 'var(--color-peach-primary)',
-                          padding: '4px 12px',
+                          padding: '4px 14px',
                           borderRadius: '12px',
                           fontSize: '0.75rem',
                           fontWeight: 800,
@@ -768,33 +791,49 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
                         }}>
                           ✦ {item.tag}
                         </span>
-                        <span style={{ fontSize: '0.78rem', color: 'var(--color-peach-soft)', fontWeight: 600 }}>
+                        <span style={{ fontSize: '0.8rem', color: 'var(--color-peach-soft)', fontWeight: 600 }}>
                           {item.date}
                         </span>
                       </div>
 
-                      {/* Photo Thumbnail + Title */}
-                      <div style={{ display: 'flex', gap: '14px', alignItems: 'center', marginBottom: '10px' }}>
-                        <div style={{
-                          width: '56px',
-                          height: '56px',
-                          borderRadius: '14px',
-                          backgroundColor: '#FFF4EB',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          flexShrink: 0,
-                          boxShadow: '0 4px 12px rgba(0,0,0,0.25)'
-                        }}>
-                          <img src={item.img} alt={item.title} style={{ maxHeight: '44px', maxWidth: '44px', objectFit: 'contain' }} />
-                        </div>
-                        <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', color: 'var(--color-peach-primary)', margin: 0, fontStyle: 'italic', lineHeight: 1.25 }}>
-                          {item.title}
-                        </h4>
+                      {/* Photo Thumbnail in the Center */}
+                      <div style={{
+                        width: '64px',
+                        height: '64px',
+                        borderRadius: '18px',
+                        backgroundColor: '#FFF4EB',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        margin: '0 auto 12px',
+                        boxShadow: '0 6px 18px rgba(0,0,0,0.35)',
+                        border: '2px solid rgba(255, 217, 194, 0.3)'
+                      }}>
+                        <img src={item.img} alt={item.title} style={{ maxHeight: '48px', maxWidth: '48px', objectFit: 'contain' }} />
                       </div>
 
-                      {/* Story Text */}
-                      <p style={{ fontFamily: 'var(--font-handwriting)', fontSize: '1.35rem', color: 'var(--color-ivory)', margin: 0, lineHeight: 1.4 }}>
+                      {/* Title: Centered */}
+                      <h4 style={{
+                        fontFamily: 'var(--font-serif)',
+                        fontSize: 'clamp(1.2rem, 2.2vw, 1.35rem)',
+                        color: 'var(--color-peach-primary)',
+                        margin: '0 0 8px',
+                        fontStyle: 'italic',
+                        lineHeight: 1.25,
+                        textAlign: 'center'
+                      }}>
+                        {item.title}
+                      </h4>
+
+                      {/* Story Text: Centered */}
+                      <p style={{
+                        fontFamily: 'var(--font-handwriting)',
+                        fontSize: 'clamp(1.25rem, 2.4vw, 1.45rem)',
+                        color: 'var(--color-ivory)',
+                        margin: 0,
+                        lineHeight: 1.45,
+                        textAlign: 'center'
+                      }}>
                         "{item.story}"
                       </p>
                     </motion.div>
@@ -853,24 +892,36 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
           <div style={{
             backgroundColor: '#0A0000',
             borderRadius: '28px',
-            padding: '22px 16px 18px',
+            padding: 'clamp(16px, 3.5vw, 22px) clamp(10px, 2.5vw, 16px) clamp(14px, 3vw, 18px)',
             border: '2px solid var(--color-peach-primary)',
             boxShadow: 'var(--shadow-glow)',
             marginBottom: '26px',
-            position: 'relative'
+            position: 'relative',
+            width: '100%',
+            overflow: 'hidden'
           }}>
             {/* Reel Header Info & Controls */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 12px 12px', borderBottom: '1px solid rgba(255,217,194,0.15)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.75rem', fontWeight: 800, color: 'var(--color-peach-primary)', letterSpacing: '0.1em' }}>
-                <Camera size={15} /> KODAK PORTRA 400 • ISO 200 • 35MM
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '0 6px 12px',
+              borderBottom: '1px solid rgba(255,217,194,0.15)',
+              gap: '8px',
+              flexWrap: 'wrap'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: 'clamp(0.68rem, 2.2vw, 0.75rem)', fontWeight: 800, color: 'var(--color-peach-primary)', letterSpacing: '0.08em' }}>
+                <Camera size={14} /> KODAK PORTRA 400 • ISO 200 • 35MM
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 {/* Manual Navigation Arrows */}
                 <button
                   onClick={() => handleReelNav('left')}
+                  title="Previous photo"
+                  aria-label="Previous photo"
                   style={{
-                    width: '30px',
-                    height: '30px',
+                    width: '32px',
+                    height: '32px',
                     borderRadius: '50%',
                     backgroundColor: 'rgba(255,217,194,0.15)',
                     border: '1px solid var(--color-peach-primary)',
@@ -885,9 +936,11 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
                 </button>
                 <button
                   onClick={() => handleReelNav('right')}
+                  title="Next photo"
+                  aria-label="Next photo"
                   style={{
-                    width: '30px',
-                    height: '30px',
+                    width: '32px',
+                    height: '32px',
                     borderRadius: '50%',
                     backgroundColor: 'rgba(255,217,194,0.15)',
                     border: '1px solid var(--color-peach-primary)',
@@ -900,64 +953,59 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
                 >
                   <ChevronRight size={16} />
                 </button>
-                <button
-                  onClick={() => setIsAutoDrifting(!isAutoDrifting)}
-                  style={{
-                    padding: '4px 12px',
-                    borderRadius: '12px',
-                    backgroundColor: isAutoDrifting ? 'rgba(255,217,194,0.2)' : 'rgba(255,255,255,0.05)',
-                    border: '1px solid var(--color-peach-primary)',
-                    color: 'var(--color-peach-primary)',
-                    fontSize: '0.75rem',
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '5px'
-                  }}
-                >
-                  {isAutoDrifting ? <Pause size={12} /> : <Play size={12} />}
-                  {isAutoDrifting ? 'Auto-Drift ON' : 'Paused'}
-                </button>
               </div>
             </div>
 
             {/* Sprocket Holes Top */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', margin: '14px 0 16px', opacity: 0.4 }}>
-              {[...Array(16)].map((_, i) => (
-                <div key={i} style={{ width: '12px', height: '8px', backgroundColor: '#FFF4EB', borderRadius: '2px' }} />
+            <div style={{ display: 'flex', justifyContent: 'space-between', margin: '12px 0 14px', opacity: 0.4, gap: '4px', overflow: 'hidden' }}>
+              {[...Array(14)].map((_, i) => (
+                <div key={i} style={{ width: '12px', height: '8px', backgroundColor: '#FFF4EB', borderRadius: '2px', flexShrink: 0 }} />
               ))}
             </div>
 
             {/* 3D ROTATING & CONTINUOUSLY DRIFTING FILM FRAMES */}
             <div
               ref={filmReelContainerRef}
-              onMouseEnter={handleUserInteractionStart}
-              onMouseLeave={() => handleUserInteractionEnd(1500)}
-              onTouchStart={handleUserInteractionStart}
-              onTouchEnd={() => handleUserInteractionEnd(2000)}
-              onScroll={handleManualScroll}
-              onWheel={() => { handleUserInteractionStart(); handleUserInteractionEnd(1800); }}
+              onPointerDown={() => { isTappingRef.current = true; }}
+              onPointerUp={() => {
+                isTappingRef.current = false;
+                if (filmReelContainerRef.current) {
+                  scrollPosRef.current = filmReelContainerRef.current.scrollLeft;
+                }
+              }}
+              onPointerLeave={() => {
+                isTappingRef.current = false;
+                if (filmReelContainerRef.current) {
+                  scrollPosRef.current = filmReelContainerRef.current.scrollLeft;
+                }
+              }}
+              onScroll={() => {
+                if (isTappingRef.current && filmReelContainerRef.current) {
+                  scrollPosRef.current = filmReelContainerRef.current.scrollLeft;
+                }
+              }}
               style={{
                 display: 'flex',
-                gap: '24px',
+                gap: 'clamp(14px, 3vw, 24px)',
                 overflowX: 'auto',
-                padding: '20px 12px 24px',
+                padding: '16px 8px 20px',
                 perspective: '1200px',
                 scrollbarWidth: 'none',
                 msOverflowStyle: 'none',
                 scrollBehavior: 'auto',
-                WebkitOverflowScrolling: 'touch'
+                WebkitOverflowScrolling: 'touch',
+                cursor: 'grab',
+                userSelect: 'none'
               }}
             >
-              {allPhotos.map((photo, idx) => {
-                const isSelected = selectedPhotoIndex === idx;
+              {displayPhotos.map((photo, idx) => {
+                const isSelected = selectedPhotoIndex === (idx % initialCameraRoll.length);
                 const tiltZ = (idx % 2 === 0 ? -3.5 : 3.5);
                 const tiltY = (idx % 2 === 0 ? 5 : -5);
 
                 return (
                   <motion.div
-                    key={photo.id}
+                    key={`${photo.id}-${idx}`}
                     onClick={() => handlePhotoClick(photo, idx)}
                     animate={{
                       rotateZ: isSelected ? 0 : [tiltZ, -tiltZ, tiltZ],
@@ -969,12 +1017,12 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
                       duration: 4.2 + (idx % 4) * 0.5,
                       ease: 'easeInOut'
                     }}
-                    whileHover={{ scale: 1.08, rotateZ: 0, rotateY: 0, y: -12 }}
+                    whileHover={{ scale: 1.06, rotateZ: 0, rotateY: 0, y: -10 }}
                     style={{
-                      flex: '0 0 clamp(200px, 26vw, 240px)',
+                      flex: '0 0 clamp(190px, 58vw, 230px)',
                       backgroundColor: '#FFF4EB',
                       color: '#2B0404',
-                      padding: '14px 14px 20px',
+                      padding: 'clamp(12px, 2.5vw, 14px) clamp(10px, 2vw, 14px) clamp(14px, 2.8vw, 18px)',
                       borderRadius: '16px',
                       boxShadow: isSelected ? '0 16px 40px rgba(255, 217, 194, 0.6)' : '0 10px 30px rgba(0,0,0,0.7)',
                       border: isSelected ? '2.5px solid #8D0B0B' : '1px solid rgba(0,0,0,0.2)',
@@ -992,13 +1040,13 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
 
                     {/* Image Frame */}
                     <div style={{
-                      height: '145px',
+                      height: 'clamp(120px, 26vw, 145px)',
                       width: '100%',
                       backgroundColor: 'transparent',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      marginBottom: '12px',
+                      marginBottom: '10px',
                       position: 'relative',
                       overflow: 'hidden'
                     }}>
@@ -1006,7 +1054,7 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
                         src={photo.img}
                         alt={photo.title}
                         style={{
-                          maxHeight: '130px',
+                          maxHeight: '100%',
                           maxWidth: '100%',
                           objectFit: 'contain',
                           filter: 'drop-shadow(0 6px 16px rgba(0,0,0,0.28))'
@@ -1015,10 +1063,10 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
                     </div>
 
                     {/* Title & Handwritten Note */}
-                    <div style={{ fontFamily: 'var(--font-serif)', fontWeight: 800, fontSize: '0.95rem', color: '#8D0B0B', fontStyle: 'italic' }}>
+                    <div style={{ fontFamily: 'var(--font-serif)', fontWeight: 800, fontSize: 'clamp(0.88rem, 2.2vw, 0.95rem)', color: '#8D0B0B', fontStyle: 'italic', lineHeight: 1.25 }}>
                       {photo.title}
                     </div>
-                    <p style={{ fontFamily: 'var(--font-handwriting)', fontSize: '1.2rem', color: '#444', margin: '4px 0 8px', lineHeight: 1.3 }}>
+                    <p style={{ fontFamily: 'var(--font-handwriting)', fontSize: 'clamp(1.05rem, 2.6vw, 1.2rem)', color: '#444', margin: '4px 0 8px', lineHeight: 1.3 }}>
                       "{photo.note}"
                     </p>
 
@@ -1045,9 +1093,9 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
             </div>
 
             {/* Sprocket Holes Bottom */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', margin: '16px 0 6px', opacity: 0.4 }}>
-              {[...Array(16)].map((_, i) => (
-                <div key={i} style={{ width: '12px', height: '8px', backgroundColor: '#FFF4EB', borderRadius: '2px' }} />
+            <div style={{ display: 'flex', justifyContent: 'space-between', margin: '14px 0 6px', opacity: 0.4, gap: '4px', overflow: 'hidden' }}>
+              {[...Array(14)].map((_, i) => (
+                <div key={i} style={{ width: '12px', height: '8px', backgroundColor: '#FFF4EB', borderRadius: '2px', flexShrink: 0 }} />
               ))}
             </div>
           </div>
@@ -1129,37 +1177,8 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
             )}
           </AnimatePresence>
 
-          {/* Interactive Photo Upload Sandbox & Proceed Buttons */}
+          {/* Proceed Button */}
           <div style={{ display: 'flex', justifyContent: 'center', gap: '14px', flexWrap: 'wrap' }}>
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handlePhotoUpload}
-              accept="image/*"
-              style={{ display: 'none' }}
-            />
-
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              style={{
-                padding: '14px 24px',
-                borderRadius: 'var(--radius-pill)',
-                backgroundColor: 'rgba(255, 217, 194, 0.15)',
-                border: '1.5px dashed var(--color-peach-primary)',
-                color: 'var(--color-peach-primary)',
-                fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
-                fontWeight: 800,
-                fontSize: '0.92rem',
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                boxShadow: '0 4px 15px rgba(0,0,0,0.3)'
-              }}
-            >
-              <Upload size={16} /> Upload Photo Memory (Live Test)
-            </button>
-
             <MagneticButton onClick={() => { playSuccess(); setCurrentLayer(4); }} variant="primary" size="md">
               Shoot Cupid's Arrow →
             </MagneticButton>
@@ -1200,7 +1219,7 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
             marginBottom: '6px',
             lineHeight: 1.2
           }}>
-            "Pull The Bow & Hit The Drifting Heart"
+            {`"Aim For Cupid's Heart For ${recipientName}"`}
           </h2>
           <p style={{ fontSize: '0.95rem', color: 'var(--color-peach-soft)', marginBottom: '22px' }}>
             Grab Cupid's arrow, drag it backward to draw the bowstring, aim at the moving balloon, and release!
@@ -1231,7 +1250,7 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
                 {arrowStatus !== 'hit' ? (
                   <motion.div
                     animate={{
-                      x: [-130, 130, -130],
+                      x: [-95, 95, -95],
                       y: [-8, 8, -8],
                       rotate: [-6, 6, -6]
                     }}
@@ -1520,13 +1539,13 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
               />
             </div>
             <span style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--color-peach-primary)' }}>
-              ✦ HAPPY 1,248 DAYS ANNIVERSARY ✦
+              ✦ HAPPY 1,248 DAYS ANNIVERSARY, {recipientName.toUpperCase()} ✦
             </span>
             <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(2.4rem, 6vw, 3.8rem)', color: 'var(--color-peach-primary)', fontStyle: 'italic', margin: '6px 0', lineHeight: 1.2 }}>
-              I Still Choose You, Always.
+              I Still Choose You, Always, {recipientName}.
             </h2>
             <p style={{ fontFamily: 'var(--font-handwriting)', fontSize: '1.75rem', color: 'var(--color-ivory)' }}>
-              "To the person who turned every single day into my favorite story."
+              {`"To ${recipientName}, who turned every single day into my favorite story."`}
             </p>
           </div>
 
@@ -1534,14 +1553,15 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
           <div style={{
             backgroundColor: 'var(--color-burgundy-primary)',
             borderRadius: '20px',
-            padding: '18px 24px',
+            padding: 'clamp(14px, 3vw, 18px) clamp(14px, 3vw, 24px)',
             border: '1.5px solid var(--color-peach-primary)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            gap: '16px',
+            gap: '14px',
             marginBottom: '26px',
-            boxShadow: 'var(--shadow-md)'
+            boxShadow: 'var(--shadow-md)',
+            flexWrap: 'wrap'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
               <button
@@ -1556,7 +1576,8 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  flexShrink: 0
                 }}
               >
                 {isPlayingSong ? <Pause size={20} /> : <Play size={20} style={{ marginLeft: '2px' }} />}
@@ -1583,22 +1604,27 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
             </div>
           </div>
 
-          {/* Interactive Sealed Letter with Wax Seal */}
+          {/* Interactive Sealed Letter Card with Heart Wax Seal Button */}
           <div style={{
             backgroundColor: '#FFF4EB',
             color: '#2B0404',
             borderRadius: '24px',
-            padding: '36px 28px',
+            padding: 'clamp(24px, 5vw, 36px) clamp(16px, 4vw, 28px)',
             border: '2px solid var(--color-peach-primary)',
             boxShadow: '0 15px 40px rgba(0,0,0,0.5)',
             textAlign: 'left',
             marginBottom: '28px',
             position: 'relative'
           }}>
-            {!waxSealBroken ? (
+            {!letterUnlocked ? (
               <div style={{ textAlign: 'center', padding: '20px 0' }}>
-                <div
-                  onClick={handleBreakSeal}
+                <motion.div
+                  whileHover={{ scale: 1.08 }}
+                  whileTap={{ scale: 0.94 }}
+                  onClick={() => {
+                    playPop();
+                    setIsPasscodeModalOpen(true);
+                  }}
                   style={{
                     width: '85px',
                     height: '85px',
@@ -1617,44 +1643,354 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
                 >
                   <Heart size={32} fill="#FFD9C2" />
                   <span style={{ fontSize: '0.65rem', fontWeight: 800, marginTop: '2px' }}>UNSEAL</span>
-                </div>
-                <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', color: '#8D0B0B' }}>
-                  Tap the Wax Seal to Open Your Private Anniversary Letter
+                </motion.div>
+                <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(1.2rem, 3vw, 1.4rem)', color: '#8D0B0B', marginBottom: '6px' }}>
+                  Tap the Heart Wax Seal to Open Your Private Anniversary Letter
                 </h4>
+                <p style={{ fontSize: '0.82rem', color: '#8D0B0B', opacity: 0.8 }}>
+                  Protected by Passcode • Tap to enter
+                </p>
               </div>
             ) : (
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1.5px solid rgba(141,11,11,0.2)', paddingBottom: '10px' }}>
-                  <span style={{ fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", fontWeight: 800, fontSize: '0.92rem', color: '#8D0B0B', letterSpacing: '0.05em' }}>
+              /* Unsealed Sacred Letter */
+              <motion.div
+                key="unsealed-letter"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1.5px solid rgba(141,11,11,0.2)', paddingBottom: '10px', flexWrap: 'wrap', gap: '6px' }}>
+                  <span style={{ fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", fontWeight: 800, fontSize: '0.88rem', color: '#8D0B0B', letterSpacing: '0.05em' }}>
                     SACRED ANNIVERSARY LETTER ✦ UNSEALED
                   </span>
-                  <span style={{ fontSize: '0.8rem', color: '#666', fontWeight: 600 }}>
+                  <span style={{ fontSize: '0.78rem', color: '#666', fontWeight: 600 }}>
                     May 14, 2022 — Forever
                   </span>
                 </div>
 
-                <p style={{ fontFamily: 'var(--font-handwriting)', fontSize: '1.75rem', lineHeight: 1.6, marginBottom: '12px', color: '#180202' }}>
-                  My Dearest Love,
+                <p style={{ fontFamily: 'var(--font-handwriting)', fontSize: 'clamp(1.35rem, 3.8vw, 1.75rem)', lineHeight: 1.5, marginBottom: '12px', color: '#180202' }}>
+                  My Dearest {recipientName},
                 </p>
-                <p style={{ fontFamily: 'var(--font-handwriting)', fontSize: '1.55rem', lineHeight: 1.6, marginBottom: '14px', color: '#180202' }}>
-                  1,248 days ago, I had no idea that one conversation would change the entire trajectory of my life. Thank you for tolerating my terrible jokes, stealing all my hoodies, and making the simplest grocery run feel like a romantic comedy.
+                <p style={{ fontFamily: 'var(--font-handwriting)', fontSize: 'clamp(1.2rem, 3.2vw, 1.55rem)', lineHeight: 1.5, marginBottom: '14px', color: '#180202' }}>
+                  1,248 days ago, I had no idea that one conversation with you would change the entire trajectory of my life. Thank you for tolerating my terrible jokes, stealing all my hoodies, and making the simplest grocery run feel like a romantic comedy.
                 </p>
-                <p style={{ fontFamily: 'var(--font-handwriting)', fontSize: '1.55rem', lineHeight: 1.6, marginBottom: '16px', color: '#180202' }}>
+                <p style={{ fontFamily: 'var(--font-handwriting)', fontSize: 'clamp(1.2rem, 3.2vw, 1.55rem)', lineHeight: 1.5, marginBottom: '16px', color: '#180202' }}>
                   Here is to another 100,000 hours, a million more inside jokes, and choosing you in every single lifetime.
                 </p>
-                <p style={{ fontFamily: 'var(--font-handwriting)', fontSize: '1.65rem', fontWeight: 700, textAlign: 'right', color: '#8D0B0B' }}>
+                <p style={{ fontFamily: 'var(--font-handwriting)', fontSize: 'clamp(1.3rem, 3.5vw, 1.65rem)', fontWeight: 700, textAlign: 'right', color: '#8D0B0B' }}>
                   — Yours Forever & Always
                 </p>
               </motion.div>
             )}
           </div>
 
+          {/* Passcode Popup Modal */}
+          <AnimatePresence>
+            {isPasscodeModalOpen && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={(e) => {
+                  if (e.target === e.currentTarget) setIsPasscodeModalOpen(false);
+                }}
+                style={{
+                  position: 'fixed',
+                  inset: 0,
+                  backgroundColor: 'rgba(0, 0, 0, 0.78)',
+                  backdropFilter: 'blur(10px)',
+                  zIndex: 99999,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '16px'
+                }}
+              >
+                <motion.div
+                  initial={{ scale: 0.88, opacity: 0, y: 20 }}
+                  animate={{ scale: 1, opacity: 1, y: 0 }}
+                  exit={{ scale: 0.88, opacity: 0, y: 20 }}
+                  transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                  style={{
+                    backgroundColor: 'var(--color-burgundy-primary)',
+                    borderRadius: '26px',
+                    padding: 'clamp(20px, 4.5vw, 30px) clamp(16px, 3.5vw, 24px)',
+                    border: '2px solid var(--color-peach-primary)',
+                    boxShadow: '0 20px 60px rgba(0, 0, 0, 0.8)',
+                    textAlign: 'center',
+                    maxWidth: 'min(420px, 94vw)',
+                    width: '100%',
+                    position: 'relative'
+                  }}
+                >
+                  {/* Close Button */}
+                  <button
+                    onClick={() => setIsPasscodeModalOpen(false)}
+                    title="Close"
+                    aria-label="Close"
+                    style={{
+                      position: 'absolute',
+                      top: '16px',
+                      right: '16px',
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '50%',
+                      backgroundColor: 'rgba(255, 217, 194, 0.15)',
+                      border: '1px solid var(--color-peach-primary)',
+                      color: 'var(--color-peach-primary)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <X size={18} />
+                  </button>
+
+                  <div style={{
+                    width: '60px',
+                    height: '60px',
+                    borderRadius: '50%',
+                    backgroundColor: 'rgba(255, 217, 194, 0.15)',
+                    border: '2px solid var(--color-peach-primary)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '0 auto 12px',
+                    color: 'var(--color-peach-primary)',
+                    boxShadow: '0 0 20px rgba(255, 217, 194, 0.3)'
+                  }}>
+                    <Lock size={26} />
+                  </div>
+
+                  <div style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    backgroundColor: 'rgba(43, 4, 4, 0.7)',
+                    color: 'var(--color-peach-primary)',
+                    padding: '4px 14px',
+                    borderRadius: 'var(--radius-pill)',
+                    fontSize: '0.75rem',
+                    fontWeight: 800,
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    border: '1px solid rgba(255, 217, 194, 0.3)',
+                    marginBottom: '8px'
+                  }}>
+                    ✦ CONFIDENTIAL ANNIVERSARY VAULT ✦
+                  </div>
+
+                  <h3 style={{
+                    fontFamily: 'var(--font-serif)',
+                    fontSize: 'clamp(1.4rem, 3.2vw, 1.8rem)',
+                    color: 'var(--color-peach-primary)',
+                    fontStyle: 'italic',
+                    margin: '4px 0 2px'
+                  }}>
+                    "Enter Anniversary Passcode"
+                  </h3>
+
+                  <p style={{ fontSize: '0.84rem', color: 'var(--color-peach-soft)', marginBottom: '4px' }}>
+                    Enter Day & Month (DD / MM)
+                  </p>
+
+                  <p style={{ fontSize: '0.78rem', color: 'var(--color-peach-primary)', opacity: 0.85, marginBottom: '14px', fontWeight: 600 }}>
+                    (Hint: Day & Month • 24/08)
+                  </p>
+
+                  {/* 4 PIN Slots: DD / MM */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', margin: '12px 0 14px' }}>
+                    {/* DD Slots */}
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      {[0, 1].map((index) => {
+                        const isFilled = passcode.length > index;
+                        return (
+                          <motion.div
+                            key={`pin-d-${index}`}
+                            animate={isShake ? { x: [-8, 8, -6, 6, -3, 3, 0] } : (isFilled ? { scale: [1, 1.15, 1] } : { scale: 1 })}
+                            transition={{ duration: 0.3 }}
+                            style={{
+                              width: '46px',
+                              height: '54px',
+                              borderRadius: '14px',
+                              border: isFilled ? '2px solid var(--color-peach-primary)' : '2px dashed rgba(255, 217, 194, 0.35)',
+                              backgroundColor: isFilled ? 'rgba(255, 217, 194, 0.22)' : 'rgba(0, 0, 0, 0.35)',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              fontSize: '1.45rem',
+                              fontWeight: 800,
+                              fontFamily: "'Plus Jakarta Sans', monospace",
+                              color: 'var(--color-peach-primary)',
+                              boxShadow: isFilled ? '0 0 20px rgba(255, 217, 194, 0.4)' : 'none'
+                            }}
+                          >
+                            <span>{isFilled ? passcode[index] : ''}</span>
+                            <span style={{ fontSize: '0.6rem', opacity: 0.5, fontWeight: 700, marginTop: '-2px' }}>D</span>
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Slash Divider */}
+                    <span style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--color-peach-primary)', opacity: 0.7, padding: '0 4px' }}>/</span>
+
+                    {/* MM Slots */}
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      {[2, 3].map((index) => {
+                        const isFilled = passcode.length > index;
+                        return (
+                          <motion.div
+                            key={`pin-m-${index}`}
+                            animate={isShake ? { x: [-8, 8, -6, 6, -3, 3, 0] } : (isFilled ? { scale: [1, 1.15, 1] } : { scale: 1 })}
+                            transition={{ duration: 0.3 }}
+                            style={{
+                              width: '46px',
+                              height: '54px',
+                              borderRadius: '14px',
+                              border: isFilled ? '2px solid var(--color-peach-primary)' : '2px dashed rgba(255, 217, 194, 0.35)',
+                              backgroundColor: isFilled ? 'rgba(255, 217, 194, 0.22)' : 'rgba(0, 0, 0, 0.35)',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              fontSize: '1.45rem',
+                              fontWeight: 800,
+                              fontFamily: "'Plus Jakarta Sans', monospace",
+                              color: 'var(--color-peach-primary)',
+                              boxShadow: isFilled ? '0 0 20px rgba(255, 217, 194, 0.4)' : 'none'
+                            }}
+                          >
+                            <span>{isFilled ? passcode[index] : ''}</span>
+                            <span style={{ fontSize: '0.6rem', opacity: 0.5, fontWeight: 700, marginTop: '-2px' }}>M</span>
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Feedback message */}
+                  <div style={{ minHeight: '22px', margin: '2px 0 10px' }}>
+                    {passcodeFeedback && (
+                      <motion.p
+                        initial={{ opacity: 0, y: -4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        style={{
+                          fontFamily: 'var(--font-display)',
+                          fontSize: '0.86rem',
+                          fontWeight: 700,
+                          color: passcodeFeedback.includes('Verified') ? '#4ade80' : '#FF8585'
+                        }}
+                      >
+                        {passcodeFeedback}
+                      </motion.p>
+                    )}
+                  </div>
+
+                  {/* 3x4 Tactile Keypad */}
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(3, 1fr)',
+                    gap: '8px',
+                    maxWidth: '260px',
+                    margin: '0 auto'
+                  }}>
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((digit) => (
+                      <motion.button
+                        key={digit}
+                        type="button"
+                        whileHover={{ scale: 1.06 }}
+                        whileTap={{ scale: 0.94 }}
+                        onClick={() => handleKeypadPress(String(digit))}
+                        style={{
+                          height: '48px',
+                          borderRadius: '12px',
+                          backgroundColor: 'rgba(255, 217, 194, 0.12)',
+                          border: '1.5px solid rgba(255, 217, 194, 0.28)',
+                          color: 'var(--color-ivory)',
+                          fontSize: '1.25rem',
+                          fontWeight: 800,
+                          fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease'
+                        }}
+                      >
+                        {digit}
+                      </motion.button>
+                    ))}
+                    <motion.button
+                      type="button"
+                      whileHover={{ scale: 1.06 }}
+                      whileTap={{ scale: 0.94 }}
+                      onClick={handleKeypadClear}
+                      style={{
+                        height: '48px',
+                        borderRadius: '12px',
+                        backgroundColor: 'rgba(0, 0, 0, 0.35)',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        color: 'var(--color-peach-soft)',
+                        fontSize: '0.78rem',
+                        fontWeight: 800,
+                        fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
+                        cursor: 'pointer'
+                      }}
+                    >
+                      CLEAR
+                    </motion.button>
+                    <motion.button
+                      type="button"
+                      whileHover={{ scale: 1.06 }}
+                      whileTap={{ scale: 0.94 }}
+                      onClick={() => handleKeypadPress("0")}
+                      style={{
+                        height: '48px',
+                        borderRadius: '12px',
+                        backgroundColor: 'rgba(255, 217, 194, 0.12)',
+                        border: '1.5px solid rgba(255, 217, 194, 0.28)',
+                        color: 'var(--color-ivory)',
+                        fontSize: '1.25rem',
+                        fontWeight: 800,
+                        fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
+                        cursor: 'pointer'
+                      }}
+                    >
+                      0
+                    </motion.button>
+                    <motion.button
+                      type="button"
+                      whileHover={{ scale: 1.06 }}
+                      whileTap={{ scale: 0.94 }}
+                      onClick={handleKeypadBackspace}
+                      title="Backspace"
+                      aria-label="Backspace"
+                      style={{
+                        height: '48px',
+                        borderRadius: '12px',
+                        backgroundColor: 'rgba(0, 0, 0, 0.35)',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        color: 'var(--color-peach-primary)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <Delete size={18} />
+                    </motion.button>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* Action Row */}
           <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '14px', marginTop: '16px' }}>
             <button
               onClick={handleReplay}
               style={{
-                padding: '12px 22px',
+                padding: '12px 24px',
                 borderRadius: 'var(--radius-pill)',
                 backgroundColor: 'rgba(255, 217, 194, 0.15)',
                 border: '1px solid var(--color-peach-primary)',
@@ -1667,11 +2003,18 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
                 gap: '8px'
               }}
             >
-              <RotateCcw size={16} /> Replay Time Machine
+              <RotateCcw size={16} />
             </button>
 
-            <MagneticButton to="/contact" variant="primary" size="md">
-              Make one for your anniversary →
+            <MagneticButton
+              onClick={() => {
+                playFanfare();
+                triggerConfettiCannons();
+              }}
+              variant="primary"
+              size="md"
+            >
+              Celebrate Our Love Forever 💖
             </MagneticButton>
           </div>
         </motion.div>
@@ -1680,3 +2023,5 @@ export const AnniversaryLiveExperience = ({ onComplete }) => {
     </div>
   );
 };
+
+export default AnniversaryLiveExperience;

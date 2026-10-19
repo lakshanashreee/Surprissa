@@ -304,3 +304,134 @@ h1, h2, h3, h4, h5, h6 {
     scroll-behavior: auto !important;
   }
 }
+
+/* Gallery Frames Grid */
+.gallery-frames-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: clamp(10px, 2vw, 16px);
+  justify-items: center;
+}
+
+@media (max-width: 640px) {
+  .gallery-frames-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Floating Decor Sticker */
+.floating-decor-sticker {
+  position: absolute;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0.9;
+}
+
+@media (max-width: 900px) {
+  .floating-decor-sticker {
+    display: none !important;
+  }
+}
+
+/* Apple Notes Caret Blink */
+@keyframes appleNotesBlink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Anniversary Metrics Grid */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(10px, 2vw, 16px);
+  margin-bottom: 24px;
+}
+
+@media (max-width: 680px) {
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Sacred Vertical Line Timeline */
+.sacred-timeline-container {
+  position: relative;
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto 36px;
+  padding: 20px 0;
+  box-sizing: border-box;
+}
+
+.sacred-timeline-spine {
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3px;
+  background: linear-gradient(180deg, #FFB703, var(--color-peach-primary), #FF4D6D);
+  box-shadow: 0 0 14px rgba(255, 217, 194, 0.6);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.sacred-timeline-item {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.sacred-timeline-item.even {
+  justify-content: flex-start;
+  padding-right: calc(50% + 24px);
+}
+
+.sacred-timeline-item.odd {
+  justify-content: flex-end;
+  padding-left: calc(50% + 24px);
+}
+
+.sacred-timeline-node {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  border-radius: 50%;
+  border: 2px solid var(--color-peach-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 5;
+  transition: all 0.25s ease;
+}
+
+.sacred-timeline-card {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 680px) {
+  .sacred-timeline-spine {
+    left: 20px;
+    transform: none;
+  }
+  .sacred-timeline-item.even,
+  .sacred-timeline-item.odd {
+    justify-content: flex-start;
+    padding-left: 44px;
+    padding-right: 0;
+  }
+  .sacred-timeline-node {
+    left: 20px;
+  }
+}
+
+

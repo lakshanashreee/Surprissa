@@ -203,17 +203,26 @@ export const LivePreviewModal = ({ demo, onClose }) => {
 
           {/* 2. ASK THEM OUT PRODUCT DEMO REPLICA */}
           {demo.demoType === 'askOut' && (
-            <AskOutLiveExperience onComplete={() => {}} />
+            <AskOutLiveExperience
+              recipientName={recipientName || "Stacy"}
+              onComplete={() => {}}
+            />
           )}
 
           {/* 3. ANNIVERSARY PRODUCT DEMO REPLICA */}
           {demo.demoType === 'anniversary' && (
-            <AnniversaryLiveExperience onComplete={() => {}} />
+            <AnniversaryLiveExperience
+              recipientName={recipientName || "Stacy"}
+              onComplete={() => {}}
+            />
           )}
 
           {/* 4. APOLOGY PRODUCT DEMO REPLICA */}
           {demo.demoType === 'apology' && (
-            <ApologyLiveExperience onComplete={() => {}} />
+            <ApologyLiveExperience
+              recipientName={recipientName || "Stacy"}
+              onComplete={() => {}}
+            />
           )}
 
           {/* 5. BEST FRIEND PRODUCT DEMO REPLICA */}

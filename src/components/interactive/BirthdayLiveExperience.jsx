@@ -426,6 +426,36 @@ export const BirthdayLiveExperience = ({ onComplete, recipientName = "Stacy" }) 
     }}>
 
       {/* ========================================================
+          SUBTLE SURPRISSA DEMO WATERMARK (CENTER FRAME HALLMARK)
+         ======================================================== */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          pointerEvents: 'none',
+          userSelect: 'none',
+          zIndex: 25,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '8px',
+          fontFamily: 'var(--font-serif)',
+          fontSize: 'clamp(1.4rem, 3.4vw, 2.3rem)',
+          fontStyle: 'italic',
+          letterSpacing: '0.12em',
+          color: 'rgba(255, 217, 194, 0.18)',
+          textTransform: 'lowercase',
+          whiteSpace: 'nowrap',
+          textShadow: '0 0 16px rgba(255, 217, 194, 0.15)'
+        }}
+      >
+        <span>✦ surprissa demo ✦</span>
+      </div>
+
+      {/* ========================================================
           TRANSPARENT FLOATING STICKERS & AESTHETIC ELEMENTS
          ======================================================== */}
       {/* Top-Left Pink Flower Sticker */}
