@@ -5,6 +5,14 @@ import confetti from 'canvas-confetti';
 import { useAudio } from '../components/ui/AudioEffects';
 import { MagneticButton } from '../components/ui/MagneticButton';
 
+const InstagramIcon = ({ size = 18, color = 'currentColor' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+  </svg>
+);
+
 export const Contact = () => {
   const { playPop, playSuccess } = useAudio();
   const [step, setStep] = useState(1);
@@ -13,13 +21,14 @@ export const Contact = () => {
 
   const [formData, setFormData] = useState({
     name: '',
+    instagram: '',
     email: '',
     whoIsItFor: '',
     lookingFor: 'Personal Experience',
     occasion: 'Birthday',
     lifespan: 'Forever Vault (Permanent Keepsake)',
     message: '',
-    budget: '',
+    plan: '',
     preferredDate: ''
   });
 
@@ -68,7 +77,8 @@ export const Contact = () => {
           },
           body: JSON.stringify({
             _to: targetEmail,
-            ...formData
+            ...formData,
+            plan: formData.plan
           })
         });
 
@@ -111,13 +121,14 @@ export const Contact = () => {
     const subject = encodeURIComponent(`New Surprissa Order Query: ${formData.occasion} for ${formData.whoIsItFor || 'someone special'}`);
     const body = encodeURIComponent(
       `Name: ${formData.name}\n` +
-      `Email: ${formData.email}\n` +
+      `Instagram ID: ${formData.instagram || 'Not provided'}\n` +
+      `Email: ${formData.email || 'Not provided'}\n` +
       `Looking For: ${formData.lookingFor}\n` +
       `Occasion: ${formData.occasion}\n` +
       `Who is it for: ${formData.whoIsItFor}\n` +
       `Website Lifespan / Expiry: ${formData.lifespan}\n` +
       `Preferred Date: ${formData.preferredDate || 'Flexible'}\n` +
-      `Budget: ${formData.budget || 'Not specified'}\n\n` +
+      `Plan / Hosting Duration: ${formData.plan || 'Not selected'}\n\n` +
       `Message & Story:\n${formData.message}`
     );
     return `mailto:${targetEmail}?subject=${subject}&body=${body}`;
@@ -129,13 +140,14 @@ export const Contact = () => {
     setStep(1);
     setFormData({
       name: '',
+      instagram: '',
       email: '',
       whoIsItFor: '',
       lookingFor: 'Personal Experience',
       occasion: 'Birthday',
       lifespan: 'Forever Vault (Permanent Keepsake)',
       message: '',
-      budget: '',
+      plan: '',
       preferredDate: ''
     });
   };
@@ -189,25 +201,49 @@ export const Contact = () => {
               All inquiries and order details are routed directly to:
             </p>
 
-            <a
-              href={`mailto:${targetEmail}`}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '8px 20px',
-                borderRadius: 'var(--radius-pill)',
-                backgroundColor: 'rgba(255, 217, 194, 0.15)',
-                color: 'var(--color-peach-primary)',
-                fontFamily: 'var(--font-display)',
-                fontWeight: 700,
-                fontSize: '1rem',
-                textDecoration: 'none',
-                border: '1px solid var(--color-peach-primary)'
-              }}
-            >
-              <Mail size={18} /> {targetEmail}
-            </a>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '8px' }}>
+              <a
+                href={`mailto:${targetEmail}`}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '8px 18px',
+                  borderRadius: 'var(--radius-pill)',
+                  backgroundColor: 'rgba(255, 217, 194, 0.15)',
+                  color: 'var(--color-peach-primary)',
+                  fontFamily: 'var(--font-display)',
+                  fontWeight: 700,
+                  fontSize: '0.95rem',
+                  textDecoration: 'none',
+                  border: '1px solid var(--color-peach-primary)'
+                }}
+              >
+                <Mail size={16} /> {targetEmail}
+              </a>
+
+              <a
+                href="https://www.instagram.com/surprissa/"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '8px 18px',
+                  borderRadius: 'var(--radius-pill)',
+                  backgroundColor: 'rgba(255, 217, 194, 0.15)',
+                  color: 'var(--color-peach-primary)',
+                  fontFamily: 'var(--font-display)',
+                  fontWeight: 700,
+                  fontSize: '0.95rem',
+                  textDecoration: 'none',
+                  border: '1px solid var(--color-peach-primary)'
+                }}
+              >
+                <InstagramIcon size={16} /> @surprissa
+              </a>
+            </div>
           </div>
 
           {/* Wizard Progress Bar */}
@@ -215,7 +251,7 @@ export const Contact = () => {
             <div style={{ marginBottom: '32px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.85rem', color: 'var(--color-peach-primary)', fontWeight: 700 }}>
                 <span>Step {step} of 4</span>
-                <span>{step === 1 ? 'Who is it for?' : step === 2 ? 'Occasion' : step === 3 ? 'Story & Vibe' : 'Timing & Budget'}</span>
+                <span>{step === 1 ? 'Who is it for?' : step === 2 ? 'Occasion' : step === 3 ? 'Story & Vibe' : 'Timing & Plans'}</span>
               </div>
               <div style={{ width: '100%', height: '6px', backgroundColor: 'rgba(255, 217, 194, 0.15)', borderRadius: '3px', overflow: 'hidden' }}>
                 <motion.div
@@ -355,28 +391,56 @@ export const Contact = () => {
                         />
                       </div>
 
-                      <div>
-                        <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-peach-soft)', display: 'block', marginBottom: '8px' }}>
-                          Your Email *
-                        </label>
-                        <input
-                          type="email"
-                          required
-                          value={formData.email}
-                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                          placeholder="you@domain.com"
-                          style={{
-                            width: '100%',
-                            padding: '14px 18px',
-                            borderRadius: '12px',
-                            border: '1px solid rgba(255, 217, 194, 0.25)',
-                            backgroundColor: 'rgba(24, 2, 2, 0.6)',
-                            color: 'var(--color-ivory)',
-                            fontSize: '1rem',
-                            outline: 'none'
-                          }}
-                        />
+                      {/* Instagram & Email Contact Inputs */}
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+                        <div>
+                          <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-peach-soft)', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+                            <InstagramIcon size={15} color="var(--color-peach-primary)" /> Instagram ID / Handle
+                          </label>
+                          <input
+                            type="text"
+                            value={formData.instagram}
+                            onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
+                            placeholder="@yourusername"
+                            style={{
+                              width: '100%',
+                              padding: '14px 18px',
+                              borderRadius: '12px',
+                              border: '1px solid rgba(255, 217, 194, 0.25)',
+                              backgroundColor: 'rgba(24, 2, 2, 0.6)',
+                              color: 'var(--color-ivory)',
+                              fontSize: '1rem',
+                              outline: 'none'
+                            }}
+                          />
+                        </div>
+
+                        <div>
+                          <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-peach-soft)', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+                            <Mail size={15} color="var(--color-peach-primary)" /> Your Email (Optional)
+                          </label>
+                          <input
+                            type="email"
+                            value={formData.email}
+                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                            placeholder="you@domain.com"
+                            style={{
+                              width: '100%',
+                              padding: '14px 18px',
+                              borderRadius: '12px',
+                              border: '1px solid rgba(255, 217, 194, 0.25)',
+                              backgroundColor: 'rgba(24, 2, 2, 0.6)',
+                              color: 'var(--color-ivory)',
+                              fontSize: '1rem',
+                              outline: 'none'
+                            }}
+                          />
+                        </div>
                       </div>
+
+                      <p style={{ fontSize: '0.78rem', color: 'var(--color-peach-soft)', margin: '-6px 0 0 0', opacity: 0.85 }}>
+                        ✦ Please provide either your Instagram ID, Email, or both so we can contact you.
+                      </p>
 
                       <div>
                         <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-peach-soft)', display: 'block', marginBottom: '8px' }}>
@@ -404,7 +468,7 @@ export const Contact = () => {
                         <button
                           type="button"
                           onClick={nextStep}
-                          disabled={!formData.name || !formData.email}
+                          disabled={!formData.name.trim() || (!formData.email.trim() && !formData.instagram.trim())}
                           style={{
                             padding: '12px 28px',
                             borderRadius: 'var(--radius-pill)',
@@ -413,8 +477,8 @@ export const Contact = () => {
                             border: 'none',
                             fontFamily: 'var(--font-display)',
                             fontWeight: 700,
-                            cursor: (!formData.name || !formData.email) ? 'not-allowed' : 'pointer',
-                            opacity: (!formData.name || !formData.email) ? 0.5 : 1,
+                            cursor: (!formData.name.trim() || (!formData.email.trim() && !formData.instagram.trim())) ? 'not-allowed' : 'pointer',
+                            opacity: (!formData.name.trim() || (!formData.email.trim() && !formData.instagram.trim())) ? 0.5 : 1,
                             display: 'inline-flex',
                             alignItems: 'center',
                             gap: '8px'
@@ -590,7 +654,7 @@ export const Contact = () => {
                     </motion.div>
                   )}
 
-                  {/* STEP 4: Timing, Lifespan & Budget */}
+                  {/* STEP 4: Timing, Lifespan & Plans */}
                   {step === 4 && (
                     <motion.div
                       key="step4"
@@ -600,7 +664,7 @@ export const Contact = () => {
                       style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}
                     >
                       <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', color: 'var(--color-peach-primary)' }}>
-                        Step 4: Timing & Lifespan (Almost done!)
+                        Step 4: Timing & Plans (Almost done!)
                       </h3>
 
                       {/* Lifespan / Expiry Selection */}
@@ -667,11 +731,14 @@ export const Contact = () => {
 
                         <div>
                           <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-peach-soft)', display: 'block', marginBottom: '8px' }}>
-                            Optional Budget Range
+                            Plans (Optional)
+                            <span style={{ display: 'block', fontSize: '0.75rem', fontWeight: 400, opacity: 0.8, marginTop: '2px' }}>
+                              Hosting duration from the birthday date
+                            </span>
                           </label>
                           <select
-                            value={formData.budget}
-                            onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+                            value={formData.plan}
+                            onChange={(e) => setFormData({ ...formData, plan: e.target.value })}
                             style={{
                               width: '100%',
                               padding: '14px 18px',
@@ -683,10 +750,13 @@ export const Contact = () => {
                               outline: 'none'
                             }}
                           >
-                            <option value="">Select budget option (Optional)</option>
-                            <option value="Starter Gift (< $150)">Starter Digital Gift (&lt; $150)</option>
-                            <option value="Bespoke Experience ($150 - $350)">Bespoke Interactive Experience ($150 - $350)</option>
-                            <option value="Grand Gesture / Brand Web ($350+)">Grand Gesture / Brand Website ($350+)</option>
+                            <option value="">Select a plan (Optional)</option>
+                            <option value="24 hours (website available only on birthday) — ₹99">24 hours (website available only on birthday) — ₹99</option>
+                            <option value="7 days — ₹119">7 days — ₹119</option>
+                            <option value="30 days — ₹149">30 days — ₹149</option>
+                            <option value="3 months — ₹169">3 months — ₹169</option>
+                            <option value="6 months — ₹199">6 months — ₹199</option>
+                            <option value="9 months — ₹359">9 months — ₹359</option>
                           </select>
                         </div>
                       </div>
