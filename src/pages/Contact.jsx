@@ -92,7 +92,7 @@ export const Contact = () => {
               origin: { y: 0.55 },
               colors: ['#8D0B0B', '#FFD9C2', '#FFF1E8']
             });
-          } catch (err) { }
+          } catch (err) {}
         } else {
           throw new Error('Failed to send inquiry via endpoint. You can email directly below.');
         }
@@ -108,7 +108,7 @@ export const Contact = () => {
             origin: { y: 0.55 },
             colors: ['#8D0B0B', '#FFD9C2', '#FFF1E8']
           });
-        } catch (err) { }
+        } catch (err) {}
       }
     } catch (err) {
       console.error(err);
@@ -160,7 +160,7 @@ export const Contact = () => {
         position: 'relative'
       }} className="bg-grain">
         <div style={{ maxWidth: '780px', margin: '0 auto' }}>
-
+          
           {/* Header */}
           <div style={{ textAlign: 'center', marginBottom: '40px' }}>
             <span style={{
@@ -354,7 +354,7 @@ export const Contact = () => {
               ) : (
                 /* Multi-Step Wizard */
                 <form onSubmit={handleSubmit}>
-
+                  
                   {/* STEP 1: Basic Info & Recipient */}
                   {step === 1 && (
                     <motion.div
@@ -731,7 +731,7 @@ export const Contact = () => {
 
                         <div>
                           <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-peach-soft)', display: 'block', marginBottom: '8px' }}>
-                            Plans
+                            Plans (Optional)
                             <span style={{ display: 'block', fontSize: '0.75rem', fontWeight: 400, opacity: 0.8, marginTop: '2px' }}>
                               Hosting duration from the birthday date
                             </span>
@@ -750,7 +750,7 @@ export const Contact = () => {
                               outline: 'none'
                             }}
                           >
-                            <option value="">Select a plan </option>
+                            <option value="">Select a plan (Optional)</option>
                             <option value="24 hours (website available only on birthday) — ₹99">24 hours (website available only on birthday) — ₹99</option>
                             <option value="7 days — ₹119">7 days — ₹119</option>
                             <option value="30 days — ₹149">30 days — ₹149</option>
